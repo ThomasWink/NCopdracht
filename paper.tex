@@ -1,0 +1,111 @@
+% This is samplepaper.tex, a sample chapter demonstrating the
+% LLNCS macro package for Springer Computer Science proceedings;
+% Version 2.20 of 2017/10/04
+%
+\documentclass[runningheads]{llncs}
+%
+% A lot of package loading
+\usepackage{cite}
+\usepackage[pdftex]{graphicx}
+\usepackage{geometry}
+\usepackage[cmex10]{amsmath}
+\usepackage{array, algpseudocode}
+\usepackage{amsmath, amssymb, amsfonts, parskip, graphicx, verbatim}
+\usepackage{url, changepage, hyperref}
+\usepackage{bm, rotating, adjustbox, latexsym}
+\usepackage{tabularx, booktabs}
+\newcolumntype{Y}{>{\centering\arraybackslash}X}
+\usepackage{float, setspace, mdframed}
+\usepackage{color, changepage, contour, placeins, subfig, cite}
+\usepackage[mathscr]{euscript}
+\usepackage[osf]{mathpazo}
+\usepackage{pgf, tikz, microtype, algorithm}
+\usetikzlibrary{shapes,backgrounds,calc,arrows}
+\usepackage{xcolor, colortbl, dsfont}
+
+
+% If you use the hyperref package, please uncomment the following line
+% to display URLs in blue roman font according to Springer's eBook style:
+\renewcommand\UrlFont{\color{blue}\rmfamily}
+
+\graphicspath{{figures/}}
+
+\begin{document}
+%
+\title{Title Goes Here}
+%
+%\titlerunning{Abbreviated paper title}
+% If the paper title is too long for the running head, you can set
+% an abbreviated paper title here
+%
+\author{Your Names Go Here}
+%
+\authorrunning{Short Author Names}
+% First names are abbreviated in the running head.
+% If there are more than two authors, 'et al.' is used.
+%
+\institute{Leiden Institute of Advanced Computer Science, The Netherlands}
+%
+\maketitle              % typeset the header of the contribution
+%
+\begin{abstract}
+Very brief overview of this paper
+\end{abstract}
+
+
+
+
+
+\section{Introduction}
+Shortly introduce what this paper is about. This does not need to be in-depth, but should at least mention the assignment and your selected algorithm + reference(s), such as to the original paper on particle swarm optimization~\cite{eberhart1995particle}.
+
+\section{Algorithm Description} \label{sec:description}
+Give a general overview of the working principles of your algorithm. Make sure to always put quotation marks around animal names, and try to use strict formulations. For example, you can introduce your algorithm by referring to 'bats', but afterwards you should refer to them as individuals or search-points. 
+
+
+\section{Pseudo-code}
+Modify the pseudo-code given in Alg.~\ref{Alg:PSO}. Do not deviate from the format used here. Aim to be as precise as possible, and always use mathematical notation instead of referring to 'bats', 'chickens' etc. Please follow the following notation convention:
+\begin{itemize}
+    \item $n$: The dimensionality of the search space
+    \item $\mathbf{x}=(x_1,x_2,\dots,x_n)$: A solution candidate from $\mathds{R}^n$
+    \item $\mathbf{x}_i$: Solution candidate $i$ in the set/array
+    \item $f(\mathbf{x}_i)$: Objective function value of $\mathbf{x}_i$ ($f: \mathds{R}^n \rightarrow \mathds{R})$
+    \item $M$: Number of individuals in set/array
+    \item $\leftarrow$: Assignment operator
+    \item $\bm{\mathcal{U}}(\mathbf{x}^{\text{min}},\mathbf{x}^{\text{max}} )$: Vector sampled uniformly at random. Here it is 'U' for uniform. For other distributions, use for example $\bm{\mathcal{N}}(0,1)$ for a single number sampled according to the normal distribution with mean $0$ and variance $1$. 
+\end{itemize}
+If you need to use any other notation, please be consistent and clearly define your added notation. In case of doubt, feel free to ask questions on the blackboard forum. 
+
+
+\vspace{-4mm} 
+\begin{algorithm}[!ht]
+\begin{algorithmic}[1]
+	\For{$i = 1 \rightarrow M$}
+		\State{$f^{\text{best}}_i \leftarrow f(\mathbf{x}_i), \quad \mathbf{x}_i \leftarrow \bm{\mathcal{U}}(\mathbf{x}^{\text{min}}, \mathbf{x}^{\text{max}}), \quad \mathbf{v}_i \leftarrow \bm{\mathcal{U}}(-v_{\text{max}}\mathbf{1}, v_{\text{max}}\mathbf{1})$} \Comment{Initialize} 
+	\EndFor
+	
+	\While{termination criteria are not met}
+		\For{$i = 1 \rightarrow M$}
+			\State{$f_i \leftarrow f(\mathbf{x}_i)$}\Comment{Evaluate}
+			\If{$f_i < f^{\text{best}}_i$}
+				\State{$\mathbf{p}_i \leftarrow \mathbf{x}_i, \quad f^{\text{best}}_i \leftarrow f_i$}\Comment{Update personal best}
+			\EndIf   
+			\If{$f_i < f(\mathbf{g}_i)$}
+				\State{$\mathbf{g}_i \leftarrow \mathbf{x}_i$} \Comment{Update global best}
+			\EndIf  
+			\State{Calculate $\mathbf{v}_i$ according to \dots}
+			\State{$\mathbf{x}_{i} \leftarrow \mathbf{x}_{i} + \mathbf{v}_{i}$}  \Comment{Update position} 
+		\EndFor
+	\EndWhile
+ \end{algorithmic}
+\caption{Original Particle Swarm Optimization}
+\label{Alg:PSO}
+\end{algorithm}
+\vspace{-2mm}
+
+
+\bibliographystyle{splncs04}
+\bibliography{bibliography.bib}
+
+
+\end{document}
