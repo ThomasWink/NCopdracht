@@ -80,15 +80,19 @@ If you need to use any other notation, please be consistent and clearly define y
 \vspace{-4mm} 
 \begin{algorithm}[!ht]
 \begin{algorithmic}[1]
-    	\State{$NP \leftarrow User \quad assigned$}
-    	\State{$ \mathbf{k}_{max} \leftarrow User \quad assigned $}
-	\For{$i = 1 \rightarrow M$}
-        	\State{$ \mathbf{\eta }_k \leftarrow random \quad assigned $}
-        	\State{$ \mathbf{\alpha }_k \leftarrow random \quad assigned $}
-        	\State{$ \mathbf{\beta }_k \leftarrow random \quad assigned $}
-		\State{$f^{\text{best}}_i \leftarrow f(\mathbf{x}_i), \quad \mathbf{x}_i \leftarrow \bm{\mathcal{U}}(\mathbf{x}^{\text{min}}, \mathbf{x}^{\text{max}}), \quad \mathbf{v}_i \leftarrow \bm{\mathcal{U}}(-v_{\text{max}}\mathbf{1}, v_{\text{max}}\mathbf{1})$} \Comment{Initialize} 
+    \State{$NP \leftarrow User \quad assigned$} \Comment{Initialize} 
+    \State{$ \mathbf{k}_{max} \leftarrow User \quad assigned $}
+    \State{$ \mathbf{k} \leftarrow 1$ }
+	\For{$i = 1 \rightarrow k_{max}$}
+        \State{$ \eta_k \leftarrow random \quad assigned $}
+        \State{$ \alpha_k \leftarrow random \quad assigned $}
+        \State{$ \beta_k \leftarrow random \quad assigned $}
 	\EndFor
-	
+	\For{$i = 1 \rightarrow NP$}
+	    \For{$j = 1\rightarrow ND$}
+	        \State{$x_{i,j}^1 \leftarrow Random \quad assigned \quad within \quad allowed \quad range$}
+	    \EndFor
+	\EndFor
 	\While{termination criteria are not met}
 		\For{$i = 1 \rightarrow M$}
 			\State{$f_i \leftarrow f(\mathbf{x}_i)$}\Comment{Evaluate}
