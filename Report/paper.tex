@@ -2,6 +2,7 @@
 % LLNCS macro package for Springer Computer Science proceedings;
 % Version 2.20 of 2017/10/04
 %
+\RequirePackage[cmex10]{amsmath}
 \documentclass[runningheads]{llncs}
 %
 % A lot of package loading
@@ -84,30 +85,43 @@ If you need to use any other notation, please be consistent and clearly define y
     \State{$ \mathbf{k}_{max} \leftarrow User \quad assigned $}
     \State{$ \mathbf{k} \leftarrow 1$ }
 	\For{$i = 1 \rightarrow k_{max}$}
-        \State{$ \eta_k \leftarrow random \quad assigned $}
-        \State{$ \alpha_k \leftarrow random \quad assigned $}
-        \State{$ \beta_k \leftarrow random \quad assigned $}
+        \State{$ \alpha_k \leftarrow User \quad assigned $}
+        \State{$ \beta_k \leftarrow User \quad assigned $}
+        \State{$ \eta_k \leftarrow User \quad assigned $}
+		%\State{$f^{\text{best}}_i \leftarrow f(\mathbf{x}_i), \quad \mathbf{x}_i \leftarrow \bm{\mathcal{U}}(\mathbf{x}^{\text{min}}, \mathbf{x}^{\text{max}}), \quad \mathbf{v}_i \leftarrow \bm{\mathcal{U}}(-v_{\text{max}}\mathbf{1}, v_{\text{max}}\mathbf{1})$}
 	\EndFor
 	\For{$i = 1 \rightarrow NP$}
 	    \For{$j = 1\rightarrow ND$}
 	        \State{$x_{i,j}^1 \leftarrow Random \quad assigned \quad within \quad allowed \quad range$}
 	    \EndFor
 	\EndFor
-	\While{termination criteria are not met}
-		\For{$i = 1 \rightarrow M$}
-			\State{$f_i \leftarrow f(\mathbf{x}_i)$}\Comment{Evaluate}
-			\If{$f_i < f^{\text{best}}_i$}
-				\State{$\mathbf{p}_i \leftarrow \mathbf{x}_i, \quad f^{\text{best}}_i \leftarrow f_i$}\Comment{Update personal best}
-			\EndIf   
-			\If{$f_i < f(\mathbf{g}_i)$}
-				\State{$\mathbf{g}_i \leftarrow \mathbf{x}_i$} \Comment{Update global best}
-			\EndIf  
-			\State{Calculate $\mathbf{v}_i$ according to \dots}
-			\State{$\mathbf{x}_{i} \leftarrow \mathbf{x}_{i} + \mathbf{v}_{i}$}  \Comment{Update position} 
-		\EndFor
-	\EndWhile
+	\While{$k<k_{max}$}
+    	\For{$i = 1 \rightarrow NP$}  \Comment{Forward Movement-Speed} 
+    	    \For{$j = 1\rightarrow ND$}
+    	        \State{$v_{i,j}^k \leftarrow \eta _k \cdot R1 \cdot  \left. \frac{\partial(OF)}{\partial x_j} \right \rvert_{x_{i,j}^k} + \alpha_k \cdot R2 \cdot v_{i,j}^{k-1}$}
+    	        \If{$\left \lvert v_{i,j}^k \right \rvert  > \left \lvert \beta_k \cdot v_{i,j}^{k-1} \right \rvert $}
+    	            \State{$\left \lvert v_{i,j}^k \right \rvert \leftarrow \left \lvert \beta_k \cdot v_{i,j}^{k-1} \right \rvert$}
+    	       \EndIf
+    	    \EndFor
+    	\EndFor
+    	\For{$i = 1 \rightarrow NP$}  \Comment{Forward Movement-New position} 
+    	    \State{$Y_i^{k+1} \leftarrow X_i^k + V_i^k$}
+    	\EndFor
+    	\For{$i = 1 \rightarrow NP$} \Comment{Rotational Movement-Local search} 
+    	    \For{$m = 1 \rightarrow M$}
+    	        \State{$Z_i^{k+1, m} \leftarrow Y_i^{k+1} + R3 \cdot Y_i^{k+1}$}
+    	    \EndFor
+    	\EndFor
+    	\For{$i = 1 \rightarrow NP$} \Comment{Rotational Movement-Local search} 
+    	    \For{$m = 1 \rightarrow M$}
+    	        \State{$X_i^{k+1} \leftarrow $ max($Z_i^{k+1, m}$)}
+    	    \EndFor
+    	    \State{$X_i^{k+1} \leftarrow $ max($X_i^{k+1}, Y_i^{k+1}$)} \Comment{Evaluate}
+    	\EndFor
+    	\State{$k \leftarrow k+1$}
+    \EndWhile
  \end{algorithmic}
-\caption{Original Particle Swarm Optimization}
+\caption{Shark Smell Optimization}
 \label{Alg:PSO}
 \end{algorithm}
 \vspace{-2mm}
