@@ -1,0 +1,219 @@
+% This is samplepaper.tex, a sample chapter demonstrating the
+% LLNCS macro package for Springer Computer Science proceedings;
+% Version 2.20 of 2017/10/04
+%
+\documentclass[runningheads]{llncs}
+%
+% A lot of package loading
+\usepackage[pdftex]{graphicx}
+\usepackage{geometry}
+\usepackage[cmex10]{amsmath}
+\usepackage{array, algpseudocode}
+\usepackage{amsmath, amssymb, amsfonts, parskip, graphicx, verbatim}
+\usepackage{url, hyperref}
+\usepackage{bm, rotating, adjustbox, latexsym}
+\usepackage{tabularx, booktabs}
+\newcolumntype{Y}{>{\centering\arraybackslash}X}
+\usepackage{float, setspace, mdframed}
+\usepackage{color, contour, placeins, subfig, cite}
+\usepackage[mathscr]{euscript}
+\usepackage[osf]{mathpazo}
+\usepackage{pgf, tikz, microtype, algorithm}
+\usetikzlibrary{shapes,backgrounds,calc,arrows}
+\usepackage{xcolor, colortbl, dsfont}
+
+
+% If you use the hyperref package, please uncomment the following line
+% to display URLs in blue roman font according to Springer's eBook style:
+\renewcommand\UrlFont{\color{blue}\rmfamily}
+
+\graphicspath{{figures/}}
+
+\begin{document}
+%
+\title{Shark Smell Optimization}
+%
+%\titlerunning{Abbreviated paper title}
+% If the paper title is too long for the running head, you can set
+% an abbreviated paper title here
+%
+\author{Jochem Ram (S2040328), Jerry Schonenberg (S2041022), Wouter van Tol (S2041340), Thomas Wink (S1705148)}
+%
+\authorrunning{J. Ram, J. Schonenberg, et al.}
+% First names are abbreviated in the running head.
+% If there are more than two authors, 'et al.' is used.
+%
+\institute{Leiden Institute of Advanced Computer Science, The Netherlands}
+%
+\maketitle              % typeset the header of the contribution
+%
+\begin{abstract}
+In this paper a pseudocode is presented for the Shark Smell Optimization algorithm.
+\end{abstract}
+
+
+
+
+
+\section{Introduction}
+In this paper we introduced and explained the pseudocode (as seen in \ref{secPseu}) for a new optimization algorithm based on the hunting method of sharks. The algorithm was originally introduced here \cite{abedinia2014shark}.
+
+\section{Algorithm Description} \label{sec:description}
+This algorithm uses a "shark" to find a "wounded fish" by following the "blood particles" and performing "circular searches". This comes down to a search algorithm that first goes in a direction which is seen as favorable by an objective function. Then on that new point a search is performed on points in the vicinity of this new point to see if any values there are more favorable. This is repeated a certain amount of times. \\
+In our pseudocode, on line \ref{dev}, we deviated from the original paper. In the original paper this line was: \\
+$Z_i^{k+1, m} \leftarrow Y_i^{k+1} + R3 \cdot Y_i^{k+1}$ \\
+We changed the second $ Y $ to a V, as we think that the searchspace for the rotational movement should be related to the velocity, and not to the current location.
+%Give a general overview of the working principles of your algorithm. Make sure to always put quotation marks around animal names, and try to use strict formulations. For example, you can introduce your algorithm by referring to 'bats', but afterwards you should refer to them as individuals or search-points. 
+%Make sure this description is complete. It should explain all core concepts used in your algorithm, such that one should not need to refer back to the original paper to get the global picture of the working principals.
+
+\subsection{Comparison with standard algorithms}
+
+%Based on your description of the algorithm, which of the standard algorithms we discussed in the course is the closest match to your algorithm? Describe the matching principles and where they diverge. Try to give some insight into what these differences would contribute to the performance? In which circumstances?
+
+\subsection{(Optional) Usage of algorithms}
+
+%If you have trouble dividing the work equally, you could have one team member take a look at where your algorithm has been used / cited in the past. This is optional, but could be nice to include for completeness. 
+
+\section{Pseudo-code}
+\label{secPseu}
+We followed the following notation convention. All user assigned variables are mentioned in Appendix A.
+\begin{itemize}
+    \item $N$: The dimensionality of the search space
+    \item $\mathbf{x}=(x_1,x_2,\dots,x_n)$: A solution candidate from $\mathds{R}^n$
+    \item $\mathbf{x}_i$: Solution candidate $i$ in the set/array
+    \item $f(\mathbf{x})$: Objective function value of $\mathbf{x}$ ($f: \mathds{R}^n \rightarrow \mathds{R})$
+    \item $M$: Number of individuals in set/array
+    \item $\leftarrow$: Assignment operator
+    \item $ R1 $ and $R2 $:  Random value between $ 0 $ and $ 1$.
+    \item $ R3 $: Random value between $ -1 $ and $ 1$.
+    \item $ max() $: Takes the the maximum value of the values between brackets. If there is one value between the brackets, it takes the maximum value of all values produced in the for loop, used in line \ref{spec}.
+    \item $ \bm{\mathcal{U}}(\mathbf{x}^{\text{min}},\mathbf{x}^{\text{max}} ) $: Vector sampled uniformly at random.
+    \item Further notation convention is based on mathematics.
+\end{itemize}
+
+
+
+%Modify the pseudo-code given in Alg.~\ref{Alg:PSO}. \textbf{Do not deviate from the format used here!} Aim to be as precise as possible, and always use mathematical notation instead of referring to 'bats', 'chickens' etc. Please follow the following notation convention:
+%\begin{itemize}
+%    \item $n$: The dimensionality of the search space
+%    \item $\mathbf{x}=(x_1,x_2,\dots,x_n)$: A solution candidate from $\mathds{R}^n$
+%    \item $\mathbf{x}_i$: Solution candidate $i$ in the set/array
+%    \item $f(\mathbf{x}_i)$: Objective function value of $\mathbf{x}_i$ ($f: \mathds{R}^n \rightarrow \mathds{R})$
+%    \item $M$: Number of individuals in set/array
+%    \item $\leftarrow$: Assignment operator
+%    \item $\bm{\mathcal{U}}(\mathbf{x}^{\text{min}},\mathbf{x}^{\text{max}} )$: Vector sampled uniformly at random. Here it is 'U' for uniform. For other distributions, use for example $\bm{\mathcal{N}}(0,1)$ for a single number sampled according to the \textit{normal} distribution with mean $0$ and variance $1$.
+%\end{itemize}
+%If you need to use any other notation, please be consistent and clearly define your added notation. In case of doubt, feel free to ask questions on the blackboard forum. 
+
+%Make sure to define any variables / functions you use. This can be done in the pseudocode itself or in a separate (sub)section of text. Use numbered equations to easily refer back to complicated formulas within the pseudocode. 
+
+\vspace{-4mm} 
+\begin{algorithm}[!h]
+\begin{algorithmic}[1]
+    \State{$M \leftarrow User \quad assigned$} \Comment{Initialize} 
+    \State{$ k_{max} \leftarrow User \quad assigned $}
+    \State{$ k \leftarrow 1$ }
+    \State{$ O \leftarrow User \quad assigned $ }
+    \State{$ \boldsymbol{\alpha}_k \leftarrow User \quad assigned $}
+    \State{$ \boldsymbol\beta_k \leftarrow User \quad assigned $}
+    \State{$ \boldsymbol\eta_k \leftarrow User \quad assigned $}
+	\For{$i = 1 \rightarrow M $}
+	    \For{$j = 1\rightarrow N$}
+	        \State{$x_{i,j}^1 \leftarrow \bm{\mathcal{U}}(\mathbf{x}^{\text{min}},\mathbf{x}^{\text{max}})$}
+	    \EndFor
+	\EndFor
+	\While{$k<k_{max}$}
+    	\For{$i = 1 \rightarrow M$}  \Comment{Forward Movement-Speed} 
+    	    \For{$j = 1\rightarrow N$}
+    	        \State{$v_{i,j}^k \leftarrow \eta _k \cdot R1 \cdot  \left. \frac{\partial(f(x)}{\partial x_j} \right \rvert_{x_{i,j}^k} + \alpha_k \cdot R2 \cdot v_{i,j}^{k-1}$}
+    	        \If{$\left \lvert v_{i,j}^k \right \rvert  > \left \lvert \beta_k \cdot v_{i,j}^{k-1} \right \rvert $}
+    	            \State{$\left \lvert v_{i,j}^k \right \rvert \leftarrow \left \lvert \beta_k \cdot v_{i,j}^{k-1} \right \rvert$}
+    	       \EndIf
+    	    \EndFor
+    	\EndFor
+    	\For{$i = 1 \rightarrow M$}  \Comment{Forward Movement-New position} 
+    	    \State{$Y_i^{k+1} \leftarrow X_i^k + V_i^k$}
+    	\EndFor
+    	\For{$i = 1 \rightarrow M$} \Comment{Rotational Movement-Local search} 
+    	    \For{$m = 1 \rightarrow M$}
+    	        \State{$Z_i^{k+1, m} \leftarrow Y_i^{k+1} + R3 \cdot V_i^{k}$} \Comment{deviation \label{dev}}
+    	    \EndFor
+    	\EndFor
+    	\For{$i = 1 \rightarrow M$} \Comment{Rotational Movement-New postition} 
+    	    \For{$o = 1 \rightarrow O$}
+    	        \State{$X_i^{k+1} \leftarrow $ max($f(Z_i^{k+1, o})$)}\label{spec}
+    	    \EndFor
+    	    \State{$X_i^{k+1} \leftarrow $ max($f(X_i^{k+1}), f(Y_i^{k+1})$)} \Comment{Evaluate}
+    	\EndFor
+    	\State{$k \leftarrow k+1$}
+    \EndWhile
+ \end{algorithmic}
+\caption{Shark Smell Optimization}
+\label{Alg:SSO}
+\end{algorithm}
+\vspace{-2mm}
+
+\subsection{Assumptions}
+
+%State all assumptions which are being made in your pseudocode. This will always include minimization/maximization, but can also contain perceived vagueness in the original paper, parts of the original algorithm which are ambiguous, \dots
+
+\section{Experiments}
+
+%Explain what experiments you perform. Mention IOHprofiler (experimenter and analyzer)~\cite{IOHprofiler}, COCO/BBOB~\cite{COCO} and any other tools you used, and reference them. 
+%Experiments should be performed on the BBOB-suite, functions 1-24, instances 1-5, at least for dimensions 5 and 20, at least 3 runs per instance.
+
+%Provide a table with the parameter values you used during the experiment, as well as the ones set in the original paper (if they are not the same, clearly state why this is the case). 
+
+\subsection{Original experiments}
+
+%Write a very short summary of the experiments performed in the original paper. Include which functions were used and which algorithms it was compared to (and briefly mention where it was performing well).
+
+\section{Results}
+
+%Generate your figures using the IOHanalyzer. You are required to create at least an ECDF-plot (across all functions / dimensions) comparing your algorithm to the BIPOP-CMA-ES~\cite{COCOperformace}. For this comparison you can use the data at \url{http://coco.gforge.inria.fr/data-archive/bbob/2009/BIPOP-CMA-ES_hansen_noiseless.tgz}.
+
+%For the remaining figures, you should judge which are most important by yourself. Attempt to highlight functions on which your algorithm performs particularly good / bad, and try to give some insight into why this happens.
+
+%\textit{Tip: Modify the targets in the ECDF-plot to have 1e-8 as the minimal precision. If you do this, please submit the used targets with this assignment.}
+
+\section{Conclusion}
+
+%Write a short conclusion summarizing the most important findings of this assignment:
+%\begin{itemize}
+%    \item How easy or difficult was it to reproduce the algorithm from the paper?
+%    \item How original do you consider this algorithm to be compared to those studied in the course?
+%    \item Does the algorithm perform similarly to the performance claims from the original paper?
+%    \item How does the performance of the algorithm compare to the BIPOP-CMA-ES?
+%\end{itemize}
+
+\section*{Appendix A}
+\label{AppA}
+\begin{table}[]
+\begin{tabular}{|l|l|l|ll}
+\cline{1-3}
+Variable & Minimum value & Maximum value &  &  \\  \cline{1-3}
+$M$  & 0   & 1   &  &  \\  \cline{1-3}
+$ k_{max} $    &     &     &  &  \\  \cline{1-3}
+$ O $    &     &     &  &   \\  \cline{1-3}
+$ \boldsymbol{\alpha}_k $    &     &     &  &  \\  \cline{1-3}
+$ \boldsymbol{\beta}_k $    &     &     &  &  \\  \cline{1-3}
+$ \boldsymbol{\eta}_k $    &     &     &  & \\  \cline{1-3}
+\end{tabular}
+\end{table}
+
+\bibliographystyle{splncs04}
+\bibliography{bibliography.bib}
+
+\appendix
+\section{Supplementary materials}
+Next to the report, you are also required to submit the following materials:
+\begin{itemize}
+    \item The C++ code of your algorithm. Use sufficient comments, modular coding style and clear variable names. This should only be one file which can directly be plugged into the IOHexperimenter (name the file \textit{GroupXX.cpp}). Make sure this file compiles and runs without errors on linux (the machines in rooms 302-306).\\
+    \textit{Tip: You can sse \url{https://git.liacs.nl} to host and share code with your teammates. You can log in using your ULCN username and password.}
+    \item The runtime data generated by your code. This should be a single zip-file, containing only the data from your algorithm (set algorithm name property to \textit{GroupXX-Animal-Name}).
+    \item Per team member: In an email (to \href{mailto:d.l.vermetten@liacs.leidenuniv.nl}{\email{d.l.vermetten@liacs.leidenuniv.nl}}, subject line should include "[NaCo Assignment Review]" + your group number): a grade for your teammates based on their contribution, with some motivation. 
+    \item This report in pdf format + the files used to generate it (tex, bib, figures). 
+\end{itemize}
+
+
+\end{document}
