@@ -59,7 +59,9 @@ In this paper a pseudocode is presented for the Shark Smell Optimization algorit
 In this paper we introduced and explained the pseudocode (as seen in \ref{secPseu}) for a new optimization algorithm based on the hunting method of sharks. The algorithm was originally introduced here \cite{abedinia2014shark}.
 
 \section{Algorithm Description} \label{sec:description}
-This algorithm uses a "shark", an individual, to find a "wounded fish", the maximal value of the objective function, by following the "blood particles", the gradient of the objective function, and performing "circular searches", local searches around the individual's position at each stage. This is repeated for each individual until stage $k_{max}$ is reached. \\
+This algorithm uses a "shark", an individual, to find a "wounded fish", the maximal value of the objective function, by following the "blood particles", the gradient of the objective function, and performing "circular searches", local searches around the individual's position at each stage. This is repeated for each individual until stage $k_{max}$ is reached. The number of individuals and stages can be decided by the user. 
+A single iteration of the algorithm will first contain the calculation of the movement of the individuals in each dimension of the search space. Then a new position is calculated for every position. From this position a random local search will be done, where the best point from this search will be compared with the position from the the first search. The best one of these will be the new starting position for this individual for the next iteration.
+\\
 
 %Give a general overview of the working principles of your algorithm. Make sure to always put quotation marks around animal names, and try to use strict formulations. For example, you can introduce your algorithm by referring to 'bats', but afterwards you should refer to them as individuals or search-points. 
 %Make sure this description is complete. It should explain all core concepts used in your algorithm, such that one should not need to refer back to the original paper to get the global picture of the working principals.
@@ -132,7 +134,7 @@ We followed the following notation convention. All user assigned variables are m
 	    \EndFor
 	\EndFor
 	\While{$k<k_{max}$}
-    	\For{$n = 1 \rightarrow N$}  \Comment{Forward Movement-Speed} 
+    	\For{$n = 1 \rightarrow N$}  \Comment{Calculation of movement per individual} 
     	    \For{$m = 1\rightarrow M$}
     	        \State{$v_{n,m}^k \leftarrow \eta _k \cdot R1 \cdot  \left. \frac{\partial f(x)}{\partial x_m} \right \rvert_{X_{n}^k} + \alpha_k \cdot R2 \cdot v_{n,m}^{k-1}$}
     	        \If{$\left \lvert v_{n,m}^k \right \rvert  > \left \lvert \beta_k \cdot v_{n,m}^{k-1} \right \rvert $}
@@ -140,21 +142,21 @@ We followed the following notation convention. All user assigned variables are m
     	       \EndIf
     	    \EndFor
     	\EndFor
-    	\For{$n = 1 \rightarrow N$}  \Comment{Forward Movement-New position} 
+    	\For{$n = 1 \rightarrow N$}  \Comment{Provisional assignment of new position per individual} 
     	    \State{$Y_n^{k+1} \leftarrow X_n^k + V_n^k$}
     	\EndFor
-    	\For{$n = 1 \rightarrow N$} \Comment{Rotational Movement-Local search} 
+    	\For{$n = 1 \rightarrow N$} \Comment{Random local search from provisional position per individual} 
     	    \For{$o = 1 \rightarrow O$}
-    	        \State{$Z_n^{k+1, o} \leftarrow Y_n^{k+1} + R3 \cdot V_n^{k}$} \Comment{deviation \label{dev}}
+    	        \State{$Z_n^{k+1, o} \leftarrow Y_n^{k+1} + R3 \cdot V_n^{k}$} \Comment{Deviation \label{dev}}
     	    \EndFor
     	\EndFor
-    	\For{$n = 1 \rightarrow N$} \Comment{Rotational Movement-New postition} 
+    	\For{$n = 1 \rightarrow N$} \Comment{Definitive assignment of new position chosen from provisional position and random local searches per individual} 
     	    \For{$o = 1 \rightarrow O$}
     	        \State{$X_n^{k+1} \leftarrow $ max($f(Z_n^{k+1, o})$)}\label{spec}
     	    \EndFor
-    	    \State{$X_n^{k+1} \leftarrow $ max($f(X_n^{k+1}), f(Y_n^{k+1})$)} \Comment{Evaluate}
+    	    \State{$X_n^{k+1} \leftarrow $ max($f(X_n^{k+1}), f(Y_n^{k+1})$)}
     	\EndFor
-    	\State{$k \leftarrow k+1$}
+    	\State{$k \leftarrow k+1$} \Comment{Administration}
     \EndWhile
  \end{algorithmic}
 \caption{Shark Smell Optimization}
@@ -163,15 +165,11 @@ We followed the following notation convention. All user assigned variables are m
 \vspace{-2mm}
 
 \subsection{Assumptions}
-OF should be maximized\\
-
-%State all assumptions which are being made in your pseudocode. This will always include minimization/maximization, but can also contain perceived vagueness in the original paper, parts of the original algorithm which are ambiguous, \dots
-
-\subsection{Deviation}
+With this algorithm we have done the assumed that the objective function should be maximized.\\
 In our pseudocode, on line \ref{dev}, we deviated from the original paper. In the original paper this line was: \\
 $Z_i^{k+1, m} \leftarrow Y_i^{k+1} + R3 \cdot Y_i^{k+1}$ \\
-We changed the second $ Y $ to a V, as we think that the searchspace for the rotational movement should be related to the velocity, and not to the current location.
-
+We changed the second $ Y $ to a V, as we think that the searchspace for the rotational movement should be related to the velocity, and not to the current location.\\
+%State all assumptions which are being made in your pseudocode. This will always include minimization/maximization, but can also contain perceived vagueness in the original paper, parts of the original algorithm which are ambiguous, \dots
 
 \section{Experiments}
 
