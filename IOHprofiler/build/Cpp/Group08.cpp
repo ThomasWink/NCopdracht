@@ -28,7 +28,7 @@ void copy_array(double input[], double output[], int size) {
 	}
 }
 
-double diff_objective(double shark[], int m, std::shared_ptr<IOHprofiler_problem<double>> problem, int M) {
+double diff_objective(double shark[], int m, int M, std::shared_ptr<IOHprofiler_problem<double>> problem, std::shared_ptr<IOHprofiler_csv_logger> logger) {
 	double delta;
 	double xLow, xHigh, yLow, yHigh;
 	double sharkCopy[M];
@@ -43,12 +43,14 @@ double diff_objective(double shark[], int m, std::shared_ptr<IOHprofiler_problem
 		temp.push_back(sharkCopy[i]);
 	}
 	yLow = problem->evaluate(temp);
+	logger->write_line(problem->loggerCOCOInfo());
 	sharkCopy[m] = xHigh;
 	temp.clear();
 	for (int i = 0; i < M; ++i) {
 		temp.push_back(sharkCopy[i]);
 	}
 	yHigh = problem->evaluate(temp);
+	logger->write_line(problem->loggerCOCOInfo());
 	return (yHigh-yLow)/delta;
 }
 
@@ -68,17 +70,18 @@ void shark_smell_search(std::shared_ptr<IOHprofiler_problem<double>> problem, st
 	double beta = 4.0; //Velocity ratio limiter
 	double alpha = 0.1; //Inertia coefficient
 
-	double positions[kMax+1][N][M];
-	double positionsTemp[kMax+1][N][M];
-	double velocities[kMax][N][M];
-	double rotational[kMax+1][N][O][M];
-	double tempResult[M];
+	double positions[kMax+1][N+1][M+1];
+	double positionsTemp[kMax+1][N+1][M+1];
+	double velocities[kMax+1][N+1][M+1];
+	double rotational[kMax+1][N+1][O+1][M+1];
+	double tempResult[M+1];
 	int k = 1; //Current stage
 
 	double R1;
 	double R2;
 	double R3;
-	double temp;
+	double temp1;
+	double temp2;
 
 	/*Get the lower and upper bound of each dimension's search domain*/
 	std::vector<double> lowerBounds = problem->IOHprofiler_get_lowerbound();
@@ -86,7 +89,7 @@ void shark_smell_search(std::shared_ptr<IOHprofiler_problem<double>> problem, st
 
 	/*Generate random starting positions*/
 	for (int n = 1; n <= N; ++n) {
-		for (int m = 1; m < M; ++m) {
+		for (int m = 1; m <= M; ++m) {
 			positions[1][n][m] = generate_random(lowerBounds[m], upperBounds[m]);
 			velocities[1][n][m] = 0;
 		}
@@ -99,7 +102,7 @@ void shark_smell_search(std::shared_ptr<IOHprofiler_problem<double>> problem, st
 			for (int m = 1; m < M; ++m) {
 				R1 = generate_random(0, 1);
 				R2 = generate_random(0, 1);
-				velocities[k][n][m] = eta * R1 * (diff_objective(positions[k][n], m, problem, M));
+				velocities[k][n][m] = eta * R1 * (diff_objective(positions[k][n], m, M, problem, logger));
 				velocities[k][n][m] += alpha * R2 * velocities[k-1][n][m];
 				if (velocities[k][n][m] > beta * velocities[k-1][n][m]) {
 					velocities[k][n][m] = beta * velocities[k-1][n][m];
@@ -119,21 +122,26 @@ void shark_smell_search(std::shared_ptr<IOHprofiler_problem<double>> problem, st
 			}
 		}
 		for (int n = 1; n <= N; ++n) {
-			temp = 0;
+			temp1 = 0;
 			for (int o = 1; o <= O; ++o) {
-				if (temp < problem->evaluate(arr2vec(rotational[k+1][n][o], M))) {
-					temp = problem->evaluate(arr2vec(rotational[k+1][n][o], M));
+				temp2 = problem->evaluate(arr2vec(rotational[k+1][n][o], M));
+				logger->write_line(problem->loggerCOCOInfo());
+				if (temp1 < temp2) {
+					temp1 = temp2;
 					for (int m = 1; m <= M; ++m) {
 						positions[k+1][n][m] = rotational[k+1][n][o][m];
 					}
 				}
 			}
-			if (problem->evaluate(arr2vec(positionsTemp[k+1][n], M)) > problem->evaluate(arr2vec(positions[k+1][n], M))) {
+			temp1 = problem->evaluate(arr2vec(positionsTemp[k+1][n], M));
+			logger->write_line(problem->loggerCOCOInfo());
+			temp2 = problem->evaluate(arr2vec(positions[k+1][n], M));
+			logger->write_line(problem->loggerCOCOInfo());
+			if (temp1 > temp2) {
 				for (int m = 1; m <= M; ++m) {
 					positions[k+1][n][m] = positionsTemp[k+1][n][m];
 				}
 			}
 		}
-		logger->write_line(problem->loggerCOCOInfo());
 	}
 } //niffo is gehutst

@@ -1,5 +1,5 @@
 #include "../../src/Template/Experiments/IOHprofiler_experimenter.hpp"
-#include "Group8.cpp"
+#include "Group08.cpp"
 
 IOHprofiler_random random_generator(1);
 static int budget_scale = 100;
@@ -87,12 +87,12 @@ void random_search(std::shared_ptr<IOHprofiler_problem<double> > problem, std::s
 void _run_experiment() {
   std::string configName = "./configuration.ini";
   //our experiment cuz we cool
-  IOHprofiler_experimenter<double> experimenter(configName, shark_smell_search);
+  //IOHprofiler_experimenter<double> experimenter(configName, shark_smell_search);
 
-  /// An example for PBO suite.
+  ///An example for PBO suite.
   //IOHprofiler_experimenter<int> experimenter(configName,evolutionary_algorithm);
-  /// An exmaple for BBOB suite.
-  /// IOHprofiler_experimenter<double> experimenter(configName, random_search);
+  ///An exmaple for BBOB suite.
+  IOHprofiler_experimenter<double> experimenter(configName, random_search);
   experimenter._set_independent_runs(10);
   experimenter._run();
 }
