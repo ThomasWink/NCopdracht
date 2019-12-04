@@ -57,8 +57,7 @@ In this paper a pseudocode is presented for the Shark Smell Optimization algorit
 
 \section{Introduction}
 For as long as humans exist, we have looked at nature for inspiration. Most inventions humans have made come from investigating natural phenomena and trying to reproduce what we see. This is still the case nowadays, where we think we know almost everything. It has proven useful to examine the way processes happen in nature and to try to implement this in problems we have ourselves. One example is to look at the way a shark, one of the best hunters in the sea, finds a pray in an efficient way. This can be used in an optimization problem to quickly find the best solution to a complex problem in a high dimensional solution space.\\
-In this paper we present the findings of this shark-smell-optimization (SSO) algorithm. This will be done using IOHprofiler by comparing the performance of the algorithm for different objective functions.\\
-The algorithm was originally introduced here \cite{abedinia2014shark}.
+In this paper we present the findings of the shark-smell-optimization (SSO)\cite{abedinia2014shark} algorithm. This will be done using IOHprofiler by comparing the performance of the algorithm for different objective functions.
 
 \section{Algorithm Description} \label{sec:description}
 This algorithm uses a "shark", an individual, to find a "wounded fish", the maximal value of the objective function, by following the "blood particles", the gradient of the objective function, and performing "circular searches", local searches around the individual's position at each stage. This is repeated for each individual until stage $k_{max}$ is reached. The number of individuals and stages can be decided by the user. \\
@@ -69,7 +68,7 @@ A single iteration of the algorithm will first contain the calculation of the mo
 
 \subsection{Comparison with standard algorithms}
 The SSO algorithm can be best compared to simulated annealing. This algorithm is based on the concept of heat treatment in metals, in which a hot metal is slowly heated to let the atoms slowly settle to minimal energy states. This is used in optimization by perturbing each point randomly and choosing whether to move to that point or not. If the objective function in that point is higher, it will always move. If the objective function is lower, the chance of movement is calculated with the difference in the objective function values.\\
-This algorithm matches the closest to SSO because, unlike almost all natural optimization algorithms, these two algorithms are not based on mutation or swarm behavior. They are based on the searches of individual candidate solutions without any communication between the individuals. $\boldface{Also, both algorithms increase their stochastic search value.}$ SSO does this by choosing random values around the solution candidate and evaluating all of them at once and simulated annealing does this by choosing a random value around the solution candidate and evaluating immediately. For simulated annealing this leads to a higher chance of reaching a local minimum, but this is mitigated by offering the chance of a restart where an individual is placed back to a previously found significantly better solution candidate.\\
+This algorithm matches the closest to SSO because, unlike almost all natural optimization algorithms, these two algorithms are not based on mutation or swarm behavior. They are based on the searches of individual candidate solutions without any communication between the individuals. Also, introduce randomness in their search pattern. SSO does this by choosing random values around the solution candidate and evaluating all of them at once and simulated annealing does this by choosing a random value around the solution candidate and evaluating immediately. For simulated annealing this leads to a higher chance of reaching a local minimum, but this is mitigated by offering the chance of a restart where an individual is placed back to a previously found significantly better solution candidate.\\
 However, where the SSO uses the gradient to find the movement direction of the search point, simulated annealing uses difference in objective function values in two points. Also, SSO can not move to a position with a lower objective function value while for simulated annealing this is one of it's strengths.\\
 %Based on your description of the algorithm, which of the standard algorithms we discussed in the course is the closest match to your algorithm? Describe the matching principles and where they diverge. Try to give some insight into what these differences would contribute to the performance? In which circumstances?
 
@@ -82,9 +81,9 @@ However, where the SSO uses the gradient to find the movement direction of the s
 We followed the following notation convention. All user assigned variables are mentioned in Appendix A.
 \subsection{Variable explanation}
 \begin{itemize}
-    \item $N$: The number of individuals in the set/array.
+    \item $N$: The number of individuals in the set/array. This number should be higher or equal to 1.
     \item $M$: The dimensionality of the search space.
-    \item $k_{max}$: Maximal amount of stages.
+    \item $k_{max}$: Maximal amount of stages. This number should be at least one.
     \item $O$: Number of rotational candidate solutions.
     \item $n$, $m$, $k$ and $o$: Administrative array counters for $N$, $M$, $k_{max}$ and $O$ respectively.
     \item $X_n^k$: The solution candidate $\mathds{R}^M$ of an individual at a stage.
@@ -96,9 +95,9 @@ We followed the following notation convention. All user assigned variables are m
     \item $x_m^{\text{min}}$, $x_m^{\text{max}}$: The minimal and maximal values in the search space for a variable.
     \item $f(\mathbf{x})$: Objective function value of $\mathbf{x}$ ($f: \mathds{R}^M \rightarrow \mathds{R})$.
     \item $\leftarrow$: Assignment operator.
-    \item $\boldsymbol{\alpha}$: User assigned vector in $\mathds{R}^{k_{max}}$ between 0 and 1. Represents the inertia coefficient for each stage.
-    \item $\boldsymbol{\beta}$: User assigned vector in $\mathds{R}^{k_{max}}$ between 0 and 1. Represents the velocity limiter ratio for each stage.
-    \item $\boldsymbol{\eta}$: User assigned vector in $\mathds{R}^{k_{max}}$ between 0 and 1. Limits the gradient of the objective function for each stage.
+    \item $\boldsymbol{\alpha}$: User assigned vector in $\mathds{R}^{k_{max}}$. Represents the inertia coefficient for each stage. These numbers should be in the range [0, 1]. Together with $\boldsymbol{\eta}$ it should be 1.
+    \item $\boldsymbol{\beta}$: User assigned vector in $\mathds{R}^{k_{max}}$. Represents the velocity limiter ratio for each stage. This number should be higher than 0.
+    \item $\boldsymbol{\eta}$: User assigned vector in $\mathds{R}^{k_{max}}$. Limits the gradient of the objective function for each stage. These numbers should be in the range [0, 1]. Together with $\boldsymbol{\alpha}$ it should be 1.
     \item $ r1 $ and $r2 $: Random uniform value between $ 0 $ and $ 1$ to give the algorithm more stochastic search value.
     \item $ R3 $: Vector in $\mathds{R}^M$ with random uniform values between $ -1 $ and $ 1$ to give the algorithm more stochastic search value.
     \item $\arg \max() $: Takes the variable with the highest objective function value.
@@ -201,7 +200,9 @@ This function finds the best new location by comparing the provisional new locat
 For this algorithm we did assume that the objective function should be maximized.\\
 In our pseudocode, on line \ref{dev}, we deviated from the original paper. In the original paper this line was: \\
 $Z_i^{k+1, m} \leftarrow Y_i^{k+1} + R3 \cdot Y_i^{k+1}$ \\
-We changed the second $ Y $ to a V, as we think that the searchspace for the rotational movement should be related to the velocity, and not to the current location.\\
+We changed the second $ Y $ to a $V$, as we think that the searchspace for the rotational movement should be related to the velocity, and not to the current location. Otherwise we would be placing the random local search points on a vague line through the origin. \\ %TODO
+In this line we also changed $R3$ to be a vector, in place of a number. \\
+
 %State all assumptions which are being made in your pseudocode. This will always include minimization/maximization, but can also contain perceived vagueness in the original paper, parts of the original algorithm which are ambiguous, \dots
 
 \section{Experiments}
@@ -219,10 +220,11 @@ eta = 0.9
 %Provide a table with the parameter values you used during the experiment, as well as the ones set in the original paper (if they are not the same, clearly state why this is the case). 
 
 \subsection{Original experiments}
-wat?
-huh functions?
-algorithms compared to: Adaptive PSO, modified PSO, improved PSO and enhanced PSO en een heleboel andere (de 32 meest gebruikte algoritmes van de ??? richting
-Algoritme was vrijwel overal de beste of even goed als de beste andere algoritmes
+The writers of the original paper did five experiments. In three of these experiments they compared SSO against the 32 most used algorithms in engineering applications. In these comparisons, the algorithm was the best, or equal to the best, in nearly every case. Only on one point did another algorithm perform better. Moreover, SSO was the fastest in each of these experiments. \\
+In the other two experiments they compared SSO to three of the best performing algorithms. They did this by testing SSO on a testbed in 10- and 30-dimensional environments with 28 test functions. 5 of these functions are unimodal functions, 15 are multimodal functions and 8 are composition functions. In these two experiments, SSO performed significantly better.\\
+In a final experiment they performed, they put SSO to the test on the real-world problem of PID-controller optimization. Here it outperformed all algorithms on two of the main objective functions in this field. SSO also had the least over- and undershoot in finding the PID-controller target value.
+
+
 %Write a very short summary of the experiments performed in the original paper. Include which functions were used and which algorithms it was compared to (and briefly mention where it was performing well).
 
 \section{Results}
@@ -259,7 +261,6 @@ quite original as nothing really looked like it and there were some new ideas, b
 \begin{tabular}{|l|l|l|ll}
 \cline{1-3}
 Variable & Minimum value & Maximum value &  &  \\  \cline{1-3}
-$M$  & 1   & undefined   &  &  \\  \cline{1-3}
 $N$ & 1 & undefined & & \\ \cline{1-3}
 $ k_{max} $ & 1 & undefined &  &  \\  \cline{1-3}
 $ O $   & 0    & undefined &  &   \\  \cline{1-3}
