@@ -70,7 +70,7 @@ void evolutionary_algorithm(std::shared_ptr<IOHprofiler_problem<int> > problem, 
 void random_search(std::shared_ptr<IOHprofiler_problem<double> > problem, std::shared_ptr<IOHprofiler_csv_logger> logger) {
   /// Declaration for variables in the algorithm
   std::vector<double> x(problem->IOHprofiler_get_number_of_variables());
-  double y;
+  //double y;
 
   int count = 0;
   while (count <= 500) {
