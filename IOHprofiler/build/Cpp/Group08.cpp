@@ -138,7 +138,6 @@ void shark_smell_search(std::shared_ptr<IOHprofiler_problem<double>> problem, st
 
 	/*algorithm main loop*/
 	for (; k <= kMax; ++k) { //iteration over all stages
-		std::cout << "Starting round " << k << std::endl;
 		for (int n = 1; n <= N; ++n) { //Calculation of movement per individual, dimension
 			for (int m = 1; m <= M; ++m) {
 				R1 = generate_random(0, 1);
@@ -169,9 +168,7 @@ void shark_smell_search(std::shared_ptr<IOHprofiler_problem<double>> problem, st
 				logger->write_line(problem->loggerCOCOInfo());
 				if (temp1 < temp2) {
 					temp1 = temp2;
-					for (int m = 1; m <= M; ++m) {
-						positions[k+1][n][m] = rotational[k+1][n][o][m];
-					}
+					copy_array(rotational[k+1][n][o], positions[k+1][n], M);
 				}
 			}
 			temp1 = problem->evaluate(arr2vec(positionsTemp[k+1][n], M));
@@ -179,9 +176,7 @@ void shark_smell_search(std::shared_ptr<IOHprofiler_problem<double>> problem, st
 			temp2 = problem->evaluate(arr2vec(positions[k+1][n], M));
 			logger->write_line(problem->loggerCOCOInfo());
 			if (temp1 > temp2) {
-				for (int m = 1; m <= M; ++m) {
-					positions[k+1][n][m] = positionsTemp[k+1][n][m];
-				}
+				copy_array(positionsTemp[k+1][n], positions[k+1][n], M);
 			}
 		} //this for-loop is equal to function 5
 	}
