@@ -1,0 +1,3 @@
+suite = BBOB, funcId = 24, DIM = 5, algId = shark_smell_search, algInfo = shark_smell_seach_optimization
+%
+data_f24_Lunacek_Bi_Rastrigin/IOHprofiler_f24_DIM5.dat, 1:85|134.096, 1:206|139.841, 1:312|148.825, 2:333|166.254, 2:217|151.94, 2:444|165.082, 3:375|91.5143, 3:747|73.4828, 3:718|71.9326, 4:492|249.108, 4:302|262.675, 4:472|259.359, 5:346|-75.9849, 5:19|-64.9451, 5:105|-59.3042
