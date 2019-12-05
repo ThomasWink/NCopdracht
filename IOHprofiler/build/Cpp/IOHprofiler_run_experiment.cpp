@@ -78,7 +78,7 @@ void random_search(std::shared_ptr<IOHprofiler_problem<double> > problem, std::s
       x[i] = random_generator.IOHprofiler_uniform_rand() * 10 - 5;
     }
 
-    y = problem->evaluate(x);
+    problem->evaluate(x);
     logger->write_line(problem->loggerCOCOInfo());
     count++;
   }
