@@ -60,10 +60,10 @@ void shark_smell_search(std::shared_ptr<IOHprofiler_problem<double>> problem, st
 	std::vector<double> x(problem->IOHprofiler_get_number_of_variables());
 	double y;
 
-	const int N = 5; //Population size
+	const int N = 50; //Population size
 	const int M = problem->IOHprofiler_get_number_of_variables(); //dimensions
 	const int O = 12;
-	const int kMax = 7; //Maximum amount of stages
+	const int kMax = 100; //Maximum amount of stages
 
 	//TODO make vector
 	double eta = 0.9; //Velocity multiplier
@@ -96,10 +96,10 @@ void shark_smell_search(std::shared_ptr<IOHprofiler_problem<double>> problem, st
 	}
 
 	/*algorithm main loop*/
-	for (; k < kMax; ++k) {
+	for (; k <= kMax; ++k) {
 		std::cout << "Starting round " << k << std::endl;
-		for (int n = 1; n < N; ++n) {
-			for (int m = 1; m < M; ++m) {
+		for (int n = 1; n <= N; ++n) {
+			for (int m = 1; m <= M; ++m) {
 				R1 = generate_random(0, 1);
 				R2 = generate_random(0, 1);
 				velocities[k][n][m] = eta * R1 * (diff_objective(positions[k][n], m, M, problem, logger));
