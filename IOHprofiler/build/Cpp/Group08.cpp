@@ -23,7 +23,7 @@ double generate_random(double rangeStart, double rangeEnd) {
 */
 std::vector<double> arr2vec(double arr[], int length) {
 	std::vector<double> v;
-	for (int i = 0; i < length; ++i) {
+	for (int i = 0; i <= length; ++i) {
 		v.push_back(arr[i]);
 	}
 	return v;
@@ -37,7 +37,7 @@ std::vector<double> arr2vec(double arr[], int length) {
 @param size: The size of arrays array1, array2 and result.
 */
 void add_array(double array1[], double array2[], double result[], int size) {
-	for (int i = 0; i < size; ++i) {
+	for (int i = 0; i <= size; ++i) {
 		result[i] = array1[i] + array2[i];
 	}
 }
@@ -49,7 +49,7 @@ void add_array(double array1[], double array2[], double result[], int size) {
 @param size: The size of arrays input and output.
 */
 void copy_array(double input[], double output[], int size) {
-	for (int i = 0; i < size; ++i) {
+	for (int i = 0; i <= size; ++i) {
 		output[i] = input[i];
 	}
 }
@@ -98,22 +98,23 @@ double diff_objective(double shark[], int m, int M, std::shared_ptr<IOHprofiler_
 void shark_smell_search(std::shared_ptr<IOHprofiler_problem<double>> problem, std::shared_ptr<IOHprofiler_csv_logger> logger) {
 	std::vector<double> x(problem->IOHprofiler_get_number_of_variables());
 	double y;
-	
+
 	//Variable assignments
-	const int N = 5; //Population size
+	const int N = 50; //Population size
 	const int M = problem->IOHprofiler_get_number_of_variables(); //dimensions
-	const int O = 12; //amount of random
-	const int kMax = 7; //Maximum amount of stages
+	const int O = 12; //amount of random searches
+	const int kMax = 100; //Maximum amount of stages
+
 
 	//TODO make vector
 	double eta = 0.9; //Velocity multiplier
 	double beta = 4.0; //Velocity ratio limiter
 	double alpha = 0.1; //Inertia coefficient
 
-	double positions[kMax+1][N+1][M+1]; //position of individual
-	double positionsTemp[kMax+1][N+1][M+1]; //provisional position of individual
-	double velocities[kMax+1][N+1][M+1]; //velocity values of individual
-	double rotational[kMax+1][N+1][O+1][M+1]; //Random positions of individual, to be evaluated 
+	double positions[kMax+2][N+1][M+1]; //position of individual
+	double positionsTemp[kMax+2][N+1][M+1]; //provisional position of individual
+	double velocities[kMax+2][N+1][M+1]; //velocity values of individual
+	double rotational[kMax+2][N+1][O+1][M+1]; //Random positions of individual, to be evaluated 
 	double tempResult[M+1]; //temporary copy array
 	int k = 1; //Current stage
 
@@ -136,10 +137,10 @@ void shark_smell_search(std::shared_ptr<IOHprofiler_problem<double>> problem, st
 	}
 
 	/*algorithm main loop*/
-	for (; k < kMax; ++k) { //iteration over all stages
+	for (; k <= kMax; ++k) { //iteration over all stages
 		std::cout << "Starting round " << k << std::endl;
-		for (int n = 1; n < N; ++n) { //Calculation of movement per individual, dimension
-			for (int m = 1; m < M; ++m) {
+		for (int n = 1; n <= N; ++n) { //Calculation of movement per individual, dimension
+			for (int m = 1; m <= M; ++m) {
 				R1 = generate_random(0, 1);
 				R2 = generate_random(0, 1);
 				velocities[k][n][m] = eta * R1 * (diff_objective(positions[k][n], m, M, problem, logger));

@@ -86,14 +86,14 @@ void random_search(std::shared_ptr<IOHprofiler_problem<double> > problem, std::s
 
 void _run_experiment() {
   std::string configName = "./configuration.ini";
-  //our experiment cuz we cool
-  //IOHprofiler_experimenter<double> experimenter(configName, shark_smell_search);
+  //Group08's algorithm (to be run with the BBOB suite)
+  IOHprofiler_experimenter<double> experimenter(configName, shark_smell_search);
 
   ///An example for PBO suite.
   //IOHprofiler_experimenter<int> experimenter(configName,evolutionary_algorithm);
   ///An exmaple for BBOB suite.
-  IOHprofiler_experimenter<double> experimenter(configName, random_search);
-  experimenter._set_independent_runs(10);
+  //IOHprofiler_experimenter<double> experimenter(configName, random_search);
+  experimenter._set_independent_runs(3);
   experimenter._run();
 }
 
