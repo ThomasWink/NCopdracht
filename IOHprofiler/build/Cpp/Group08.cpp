@@ -23,7 +23,7 @@ double generate_random(double rangeStart, double rangeEnd) {
 */
 std::vector<double> arr2vec(double arr[], int length) {
 	std::vector<double> v;
-	for (int i = 0; i <= length; ++i) {
+	for (int i = 1; i <= length; ++i) {
 		v.push_back(arr[i]);
 	}
 	return v;
@@ -74,14 +74,14 @@ double diff_objective(double shark[], int m, int M, std::shared_ptr<IOHprofiler_
 	xHigh = shark[m] + delta;
 	copy_array(shark, sharkCopy, M);
 	sharkCopy[m] = xLow;
-	for (int i = 0; i <= M; ++i) {
+	for (int i = 0; i < M; ++i) {
 		temp.push_back(sharkCopy[i]);
 	}
 	yLow = problem->evaluate(temp);
 	logger->write_line(problem->loggerCOCOInfo());
 	sharkCopy[m] = xHigh;
 	temp.clear();
-	for (int i = 0; i <= M; ++i) {
+	for (int i = 0; i < M; ++i) {
 		temp.push_back(sharkCopy[i]);
 	}
 	yHigh = problem->evaluate(temp);
@@ -100,7 +100,7 @@ void shark_smell_search(std::shared_ptr<IOHprofiler_problem<double>> problem, st
 	double y;
 
 	//Variable assignments
-	const int N = 50; //Population size
+	const int N = 50; //Populdiff_objectiveation size
 	const int M = problem->IOHprofiler_get_number_of_variables(); //dimensions
 	const int O = 12; //amount of random searches
 	const int kMax = 100; //Maximum amount of stages
