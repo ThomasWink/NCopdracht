@@ -10,20 +10,20 @@ double generate_random(double rangeStart, double rangeEnd) {
 }
 std::vector<double> arr2vec(double arr[], int length) {
 	std::vector<double> v;
-	for (int i = 0; i < length; ++i) {
+	for (int i = 0; i <= length; ++i) {
 		v.push_back(arr[i]);
 	}
 	return v;
 }
 
 void add_array(double array1[], double array2[], double result[], int size) {
-	for (int i = 0; i < size; ++i) {
+	for (int i = 0; i <= size; ++i) {
 		result[i] = array1[i] + array2[i];
 	}
 }
 
 void copy_array(double input[], double output[], int size) {
-	for (int i = 0; i < size; ++i) {
+	for (int i = 0; i <= size; ++i) {
 		output[i] = input[i];
 	}
 }
@@ -39,14 +39,14 @@ double diff_objective(double shark[], int m, int M, std::shared_ptr<IOHprofiler_
 	xHigh = shark[m] + delta;
 	copy_array(shark, sharkCopy, M);
 	sharkCopy[m] = xLow;
-	for (int i = 0; i < M; ++i) {
+	for (int i = 0; i <= M; ++i) {
 		temp.push_back(sharkCopy[i]);
 	}
 	yLow = problem->evaluate(temp);
 	logger->write_line(problem->loggerCOCOInfo());
 	sharkCopy[m] = xHigh;
 	temp.clear();
-	for (int i = 0; i < M; ++i) {
+	for (int i = 0; i <= M; ++i) {
 		temp.push_back(sharkCopy[i]);
 	}
 	yHigh = problem->evaluate(temp);
@@ -70,10 +70,10 @@ void shark_smell_search(std::shared_ptr<IOHprofiler_problem<double>> problem, st
 	double beta = 4.0; //Velocity ratio limiter
 	double alpha = 0.1; //Inertia coefficient
 
-	double positions[kMax+1][N+1][M+1];
-	double positionsTemp[kMax+1][N+1][M+1];
-	double velocities[kMax+1][N+1][M+1];
-	double rotational[kMax+1][N+1][O+1][M+1];
+	double positions[kMax+2][N+1][M+1];
+	double positionsTemp[kMax+2][N+1][M+1];
+	double velocities[kMax+2][N+1][M+1];
+	double rotational[kMax+2][N+1][O+1][M+1];
 	double tempResult[M+1];
 	int k = 1; //Current stage
 
