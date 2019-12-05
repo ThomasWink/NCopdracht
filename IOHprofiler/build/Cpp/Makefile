@@ -10,7 +10,7 @@ BIN3=IOHprofiler_run_problem
 all: CCFLAGS += -O2
 all: bin/$(BIN1) bin/$(BIN2) bin/$(BIN3)
 
-debug: CCFLAGS += -g -O0
+debug: CCFLAGS += -g -O0 -Wextra
 debug: bin/$(BIN1) bin/$(BIN2) bin/$(BIN3)
 
 bin/$(BIN1):$(ODIR)/$(OBJS) IOHprofiler_run_experiment.cpp
