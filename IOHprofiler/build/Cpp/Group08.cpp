@@ -74,14 +74,14 @@ double diff_objective(double shark[], int m, int M, std::shared_ptr<IOHprofiler_
 	xHigh = shark[m] + delta;
 	copy_array(shark, sharkCopy, M);
 	sharkCopy[m] = xLow;
-	for (int i = 0; i < M; ++i) {
+	for (int i = 1; i <= M; ++i) {
 		temp.push_back(sharkCopy[i]);
 	}
 	yLow = problem->evaluate(temp);
 	logger->write_line(problem->loggerCOCOInfo());
 	sharkCopy[m] = xHigh;
 	temp.clear();
-	for (int i = 0; i < M; ++i) {
+	for (int i = 1; i <= M; ++i) {
 		temp.push_back(sharkCopy[i]);
 	}
 	yHigh = problem->evaluate(temp);
