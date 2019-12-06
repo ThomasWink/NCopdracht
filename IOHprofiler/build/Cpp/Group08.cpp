@@ -53,17 +53,35 @@ double diff_objective(std::vector<double>& shark, int m, std::shared_ptr<IOHprof
 	double delta;
 	double xLow, xHigh, yLow, yHigh;
 	double range = problem->IOHprofiler_get_upperbound()[m] - problem->IOHprofiler_get_lowerbound()[m];
-	std::vector<double> sharkCopy;
+	std::vector<double> sharkCopy (shark);
 	delta = range / 1000000;
 	xLow = shark[m] - delta;
 	xHigh = shark[m] + delta;
-	sharkCopy = shark;
+	//sharkCopy = shark;
 	sharkCopy[m] = xLow;
 	yLow = problem->evaluate(sharkCopy);
 	logger->write_line(problem->loggerCOCOInfo());
 	sharkCopy[m] = xHigh;
 	yHigh = problem->evaluate(sharkCopy);
 	logger->write_line(problem->loggerCOCOInfo());
+	
+
+	//if (isnan((yHigh-yLow)/delta)){
+		
+		
+		std::cout << "=========================" << std::endl;
+		std::cout << (yHigh-yLow)/delta << std::endl;
+		std::cout << yHigh << std::endl;
+		std::cout << yLow << std::endl;
+		std::cout << delta << std::endl;
+		std::cout << xHigh << std::endl;
+		std::cout << xLow << std::endl;
+		std::cout << shark[m] << std::endl;
+		
+	//}
+		
+	if (isnan((yHigh-yLow)/delta)) exit(0);
+		
 	return (yHigh-yLow)/delta;
 }
 
@@ -131,6 +149,7 @@ void shark_smell_search(std::shared_ptr<IOHprofiler_problem<double>> problem, st
 	/*Generate random starting positions for individuals*/
 	for (int n = 0; n < N; ++n) {
 		for (int m = 0; m < M; ++m) {
+			//std::cout << lowerBounds[m] << std::endl;
 			positions[1][n][m] = generate_random(lowerBounds[m], upperBounds[m]);
 			velocities[1][n][m] = 0;
 		}
@@ -139,6 +158,8 @@ void shark_smell_search(std::shared_ptr<IOHprofiler_problem<double>> problem, st
 	/*algorithm main loop*/
 	//iteration over all stages
 	for (int k = 1; k <= kMax; ++k) {
+		//std::cout << "=======================================" << std::endl
+		//					<< "=======================================" << std::endl;
 		//Calculation of movement per individual, dimension
 		for (int n = 0; n < N; ++n) {
 			for (int m = 0; m < M; ++m) {
@@ -146,11 +167,19 @@ void shark_smell_search(std::shared_ptr<IOHprofiler_problem<double>> problem, st
 				r2 = generate_random(0, 1);
 				
 				//function 1
-				velocities[k][n][m] = eta * r1 * (diff_objective(positions[k][n], m, problem, logger));
+				double a = diff_objective(positions[k][n], m, problem, logger);
+				//if (isnan(a)){
+					std::cout << a << std::endl;
+					std::cout << "k-1: " <<positions[k-1][n][m] << std::endl;
+					std::cout << "k-: " << positions[k][n][m] << std::endl;
+					std::cout << "k: " << k << std::endl;
+				//}
+				
+				velocities[k][n][m] = eta * r1 * a;
 				velocities[k][n][m] += alpha * r2 * velocities[k-1][n][m];
 				
 				//function 2
-				if (velocities[k][n][m] > beta * velocities[k-1][n][m]) {
+				if (abs(velocities[k][n][m]) > abs(beta * velocities[k-1][n][m])) {
 					velocities[k][n][m] = beta * velocities[k-1][n][m];
 				}
 			}
@@ -173,14 +202,20 @@ void shark_smell_search(std::shared_ptr<IOHprofiler_problem<double>> problem, st
 		}
 		//Definitive assignment of new position per individual (funcition 5)
 		for (int n = 0; n < N; ++n) {
-			temp1 = 0;
 			//iteration over the random local search points
 			for (int o = 0; o < O; ++o) {
-				temp2 = problem->evaluate(rotational[k+1][n][o]);
-				logger->write_line(problem->loggerCOCOInfo());
-				if (temp1 < temp2) {
-					temp1 = temp2;
+				if (o == 0){
+					temp1 = problem->evaluate(rotational[k+1][n][o]);
+					logger->write_line(problem->loggerCOCOInfo());
 					positions[k+1][n] = rotational[k+1][n][o];
+				}
+				else {
+					temp2 = problem->evaluate(rotational[k+1][n][o]);
+					logger->write_line(problem->loggerCOCOInfo());
+					if (temp1 > temp2) {
+						temp1 = temp2;
+						positions[k+1][n] = rotational[k+1][n][o];
+					}
 				}
 			}
 			temp1 = problem->evaluate(positionsTemp[k+1][n]);
