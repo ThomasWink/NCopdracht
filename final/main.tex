@@ -200,13 +200,31 @@ This function finds the best new location by comparing the provisional new locat
 For this algorithm we did assume that the objective function should be maximized.\\
 In our pseudocode, on line \ref{dev}, we deviated from the original paper. In the original paper this line was: \\
 $Z_i^{k+1, m} \leftarrow Y_i^{k+1} + R3 \cdot Y_i^{k+1}$ \\
-We changed the second $ Y $ to a $V$, as we think that the searchspace for the rotational movement should be related to the velocity, and not to the current location. Otherwise we would be placing the random local search points on a vague line through the origin. \\ %TODO
-In this line we also changed $R3$ to be a vector, in place of a number. \\
+We changed the second $ Y $ to a $V$, as we think that the searchspace for the rotational movement should be related to the velocity, and not to the current location. Otherwise we would be placing the random local search points on a line through the origin, which is arbitrary. \\ %TODO
+In this line we also changed $R3$ to be a vector instead of a number, since this means the rotational search is not just in the direction of the movement but also in other directions. \\
+We neglect the initial velocity which is used for calculating the velocity in the first stage.\\
 
 %State all assumptions which are being made in your pseudocode. This will always include minimization/maximization, but can also contain perceived vagueness in the original paper, parts of the original algorithm which are ambiguous, \dots
 
 \section{Experiments}
+To test the algorithm we use IOHexperimenter for benchmarking and IOHanalyzer to process the data. These are both contained in the tool IOHprofiler\cite{IOHprofiler}.\\
+The benchmarking with IOHexperimenter is done across 24 functions with each 5 instances and 3 runs per instance. The tests are done in 5 dimensions and 20 dimensions. The constants we used are shown in table \ref{tab:constants}.
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{c|c}
+        Constant & Value \\ \hline \hline
+        $N$ & 20\\\hline
+        $k_{max}$ & 50\\\hline
+        $O$ & 12 \\\hline
+        $\alpha$ & 0.1 \\\hline
+        $\beta$ & 4 \\\hline
+        $\eta$ & 0.9
+        \end{tabular}
+    \caption{User assigned constants used in the algorithm}
+    \label{tab:constants}
+\end{table}{}
 
+To see how well the algorithm performed, we compare it to BIPOP-CMA-ES\cite{COCOperformace} and create an Emperical Cumulative Distribution Function(ECDF)-plot for both these algorithms across all functions and dimensions using the IOHanalyzer.
 %Explain what experiments you perform. Mention IOHprofiler (experimenter and analyzer)~\cite{IOHprofiler}, COCO/BBOB~\cite{COCO} and any other tools you used, and reference them. 
 %Experiments should be performed on the BBOB-suite, functions 1-24, instances 1-5, at least for dimensions 5 and 20, at least 3 runs per instance.
 
@@ -223,6 +241,7 @@ eta = 0.9
 The writers of the original paper did five experiments. In three of these experiments they compared SSO against the 32 most used algorithms in engineering applications. In these comparisons, the algorithm was the best, or equal to the best, in nearly every case. Only on one point did another algorithm perform better. Moreover, SSO was the fastest in each of these experiments. \\
 In the other two experiments they compared SSO to three of the best performing algorithms. They did this by testing SSO on a testbed in 10- and 30-dimensional environments with 28 test functions. 5 of these functions are unimodal functions, 15 are multimodal functions and 8 are composition functions. In these two experiments, SSO performed significantly better.\\
 In a final experiment they performed, they put SSO to the test on the real-world problem of PID-controller optimization. Here it outperformed all algorithms on two of the main objective functions in this field. SSO also had the least over- and undershoot in finding the PID-controller target value.
+
 
 
 %Write a very short summary of the experiments performed in the original paper. Include which functions were used and which algorithms it was compared to (and briefly mention where it was performing well).
@@ -255,20 +274,20 @@ quite original as nothing really looked like it and there were some new ideas, b
 \bibliography{bibliography.bib}
 
 \appendix
-\section{Table of user defined constants}
-\label{AppA}
-\begin{table}[]
-\begin{tabular}{|l|l|l|ll}
-\cline{1-3}
-Variable & Minimum value & Maximum value &  &  \\  \cline{1-3}
-$N$ & 1 & undefined & & \\ \cline{1-3}
-$ k_{max} $ & 1 & undefined &  &  \\  \cline{1-3}
-$ O $   & 0    & undefined &  &   \\  \cline{1-3}
-$ \boldsymbol{\alpha}_k $ &  0 & 1 &  &  \\  \cline{1-3}
-$ \boldsymbol{\beta}_k $ & 0 & undefined &  &  \\  \cline{1-3}
-$ \boldsymbol{\eta}_k $ & 0 & 1 &  & \\  \cline{1-3}
-\end{tabular}
-\end{table}
+% \section{Table of user defined constants}
+% \label{AppA}
+% \begin{table}[]
+% \begin{tabular}{|l|l|l|ll}
+% \cline{1-3}
+% Variable & Minimum value & Maximum value &  &  \\  \cline{1-3}
+% $N$ & 1 & undefined & & \\ \cline{1-3}
+% $ k_{max} $ & 1 & undefined &  &  \\  \cline{1-3}
+% $ O $   & 0    & undefined &  &   \\  \cline{1-3}
+% $ \boldsymbol{\alpha}_k $ &  0 & 1 &  &  \\  \cline{1-3}
+% $ \boldsymbol{\beta}_k $ & 0 & undefined &  &  \\  \cline{1-3}
+% $ \boldsymbol{\eta}_k $ & 0 & 1 &  & \\  \cline{1-3}
+% \end{tabular}
+% \end{table}
 
 
 \section{Supplementary materials}
