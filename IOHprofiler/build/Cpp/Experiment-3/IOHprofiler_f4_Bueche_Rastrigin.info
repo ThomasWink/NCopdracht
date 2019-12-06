@@ -1,3 +1,0 @@
-suite = BBOB, funcId = 4, DIM = 16, algId = (1+1)_EA, algInfo = An_EA_algorithm
-%
-data_f4_Bueche_Rastrigin/IOHprofiler_f4_DIM16.dat, 1:47|132.785, 1:242|59.1923, 1:130|129.707, 1:99|152.724, 1:139|9.26345, 1:418|58.1886, 1:182|80.3457, 1:455|73.2237, 1:157|102.777, 1:219|40.7229
