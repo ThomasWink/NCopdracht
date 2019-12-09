@@ -10,8 +10,14 @@ typedef std::vector<vec1> vec2;
 typedef std::vector<vec2> vec3;
 typedef std::vector<vec3> vec4;
 
-template <typename T>
-T clamp(const T& n, const T& lower, const T& upper) {
+/*
+@summary clamp a number between two other values
+@param n: The value to clamp
+@param lower: The minimum value
+@param upper: The maximum value
+@return the final clamped value
+*/
+double clamp(const double n, const double lower, const double upper) {
   return std::max(lower, std::min(n, upper));
 }
 
