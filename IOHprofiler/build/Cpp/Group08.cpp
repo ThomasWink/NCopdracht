@@ -17,8 +17,7 @@ typedef std::vector<vec3> vec4;
 @param upper: The maximum value
 @return the final clamped value
 */
-template <typename T>
-T clamp(const T& n, const T& lower, const T& upper) {
+double clamp(const double n, const double lower, const double upper) {
   return std::max(lower, std::min(n, upper));
 }
 
