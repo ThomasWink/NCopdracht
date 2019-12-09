@@ -10,6 +10,11 @@ typedef std::vector<vec1> vec2;
 typedef std::vector<vec2> vec3;
 typedef std::vector<vec3> vec4;
 
+template <typename T>
+T clamp(const T& n, const T& lower, const T& upper) {
+  return std::max(lower, std::min(n, upper));
+}
+
 /*
 @summary generates a random number.
 @param rangeStart: The lower bound of the range to be generated in.
