@@ -153,7 +153,7 @@ void shark_smell_search(std::shared_ptr<IOHprofiler_problem<double>> problem, st
 		for (int m = 0; m < M; ++m) {
 			//std::cout << lowerBounds[m] << std::endl;
 			positions[1][n][m] = generate_random(lowerBounds[m], upperBounds[m]);
-			velocities[1][n][m] = 0;
+			velocities[0][n][m] = (upperBounds[m] - lowerBounds[m])/100;
 		}
 	}
 	/*Determine if algorithm is maximization or minimization*/
@@ -190,9 +190,20 @@ void shark_smell_search(std::shared_ptr<IOHprofiler_problem<double>> problem, st
 				velocities[k][n][m] = eta * r1 * a;
 				velocities[k][n][m] += alpha * r2 * velocities[k-1][n][m];
 
+				//TODO delete prints when finished
+				if (n == 0 && m == 0){
+					std::cout << "afgeleide: " << a << std::endl;
+					std::cout << "V[k-1]: " << velocities[k-1][n][m] << std::endl;
+					std::cout << "V[k-0]: " << velocities[k][n][m] << std::endl;
+					std::cout << "X[k-1]: " << positions[k-1][n][m] << std::endl;
+					std::cout << "X[k-0]: " << positions[k][n][m] << std::endl;
+					std::cout << "k: " << k << std::endl;
+					std::cout << "n: " << n << std::endl;
+					std::cout << "m: " << m << std::endl;
+				}
 				//function 2
 				if (abs(velocities[k][n][m]) > abs(beta * velocities[k-1][n][m])) {
-					velocities[k][n][m] = beta * velocities[k-1][n][m];
+					velocities[k][n][m] = beta * velocities[k-1][n][m] * velocities[k][n][m]/abs(velocities[k][n][m]);
 				}
 			}
 		}
