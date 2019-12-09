@@ -95,7 +95,7 @@ double diff_objective(std::vector<double>& shark, int m, std::shared_ptr<IOHprof
 	//}
 
 	if (isnan((yHigh-yLow)/delta)) exit(0);
-	std::cout << (yHigh-yLow)/delta << std::endl;
+	//std::cout << (yHigh-yLow)/delta << std::endl;
 	return (yHigh-yLow)/delta;
 }
 
@@ -228,7 +228,7 @@ void shark_smell_search(std::shared_ptr<IOHprofiler_problem<double>> problem, st
 		for (int n = 0; n < N; ++n) {
 			//function 3
 			for (int m = 0; m < M; ++m)
-				positionsTemp[k+1][n] = clamp(add_vector(positions[k][n], velocities[k][n]), lowerBounds[m], upperBounds[m]);
+				positionsTemp[k+1][n][m] = clamp(add_vector(positions[k][n], velocities[k][n])[m], lowerBounds[m], upperBounds[m]);
 		}
 		//Random local search from provisional position
 		for (int n = 0; n < N; ++n) {
