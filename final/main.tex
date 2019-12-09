@@ -48,7 +48,7 @@
 \maketitle              % typeset the header of the contribution
 %
 \begin{abstract}
-In this paper a pseudocode is presented for the Shark Smell Optimization algorithm.
+In this paper an optimization algorithm is presented which is based on the way sharks find their pray. Our implementation of this algorithm, which was first proposed in another paper\cite{abedinia2014shark}, turned out to produce NaN values. Because of this we were not able to verify the quality of the algorithm. This was because of a mistake in the code.
 \end{abstract}
 
 
@@ -146,7 +146,7 @@ This function finds the best new location by comparing the provisional new locat
 %If you need to use any other notation, please be consistent and clearly define your added notation. In case of doubt, feel free to ask questions on the blackboard forum. 
 
 %Make sure to define any variables / functions you use. This can be done in the pseudocode itself or in a separate (sub)section of text. Use numbered equations to easily refer back to complicated formulas within the pseudocode. 
-\newpage
+
 \subsection{Pseudocode}
 \vspace{-4mm} 
 \begin{algorithm}[!h]
@@ -168,7 +168,7 @@ This function finds the best new location by comparing the provisional new locat
     	    \For{$m = 1\rightarrow M$}
     	        \State{$v_{n,m}^k \leftarrow \eta _k \cdot r1 \cdot  \left. \frac{\partial f(x)}{\partial x_m} \right \rvert_{X_{n}^k} + \alpha_k \cdot r2 \cdot v_{n,m}^{k-1}$}\label{eq:1}
     	        \If{$\left \lvert v_{n,m}^k \right \rvert  > \left \lvert \beta_k \cdot v_{n,m}^{k-1} \right \rvert $}\label{eq:2}
-    	            \State{$\left \lvert v_{n,m}^k \right \rvert \leftarrow \left \lvert \beta_k \cdot v_{n,m}^{k-1} \right \rvert$}
+    	            \State{$ v_{n,m}^k \leftarrow  \beta_k \cdot v_{n,m}^{k-1}  $}
     	       \EndIf
     	    \EndFor
     	\EndFor
@@ -196,13 +196,21 @@ This function finds the best new location by comparing the provisional new locat
 
 
 \newpage
-\subsection{Assumptions}
-For this algorithm we did assume that the objective function should be maximized.\\
+\section{Assumptions}
+For this algorithm we assumed that the objective function should be maximized.\\
 In our pseudocode, on line \ref{dev}, we deviated from the original paper. In the original paper this line was: \\
-$Z_i^{k+1, m} \leftarrow Y_i^{k+1} + R3 \cdot Y_i^{k+1}$ \\
-We changed the second $ Y $ to a $V$, as we think that the searchspace for the rotational movement should be related to the velocity, and not to the current location. Otherwise we would be placing the random local search points on a line through the origin, which is arbitrary. \\ %TODO
-In this line we also changed $R3$ to be a vector instead of a number, since this means the rotational search is not just in the direction of the movement but also in other directions. \\
-We neglect the initial velocity which is used for calculating the velocity in the first stage.\\
+$Z_n^{k+1, o} \leftarrow Y_n^{k+1} + R3 \cdot Y_n^{k+1}$ \\
+We changed the second $ Y $ to a $V$:\\
+$Z_n^{k+1, o} \leftarrow Y_n^{k+1} + R3 \cdot V_n^{k+1}$ \\
+We did this as we think that the searchspace for the rotational movement should be related to the velocity, and not to the current location. Otherwise we would be placing the random local search points on a line through the origin, which is arbitrary. \\ %TODO
+On this line we also changed $R3$ to be a vector instead of a number, since this means the rotational search is not just in the direction of the movement but also in other directions. \\
+Since the velocity is based on the previous velocity, and can maximally be 4 times as large, we need an initial velocity unequal to 0 or else every new velocity will also be 0. The paper has not mentioned which value they used. We think that it should be a small number compared to the searchspace, so we chose $V_{n,m}^0 = (x_m^{max} - x_m^{min})/100$.\\
+Furthermore, many details were not explained in the original paper such as the chosen values for $N$, $k_{max}$, $O$, or the implementation of the partial derivative. We empirically chose the highest numbers for the constants for which the algorithm still computed quickly enough.\\
+
+\subsection{Implementation derivative}
+In the paper, the velocity is linearly equated to the derivative. This is a problem since his would mean that for a function with range 10 and function values in the millions, such as the second function with which we test the algorithm\ref{TODO}, the derivative will be in the millions and thus the velocity as well. We should, however, be changing our position with a value between 0 and 5. The other way around, if the range is in the millions and the function ranges between 1.0 and 2.0, the derivative is too low for the individual to reach the optimum within limited stages.\\
+Also, for a first order approximation of a partial derivative we take the value at a point and the value at that point plut a small distance $d$. How small this distance is, is very important for the speed and accuracy of the algorithm but was not explained by the paper. This value should also gradually become lower as the individual approaches the optimum, such that the evaluation point does not overshoot the optimum.\\
+
 
 %State all assumptions which are being made in your pseudocode. This will always include minimization/maximization, but can also contain perceived vagueness in the original paper, parts of the original algorithm which are ambiguous, \dots
 
@@ -213,8 +221,8 @@ The benchmarking with IOHexperimenter is done across 24 functions with each 5 in
     \centering
     \begin{tabular}{c|c}
         Constant & Value \\ \hline \hline
-        $N$ & 20\\\hline
-        $k_{max}$ & 50\\\hline
+        $N$ & 50\\\hline
+        $k_{max}$ & 100\\\hline
         $O$ & 12 \\\hline
         $\alpha$ & 0.1 \\\hline
         $\beta$ & 4 \\\hline
@@ -224,16 +232,13 @@ The benchmarking with IOHexperimenter is done across 24 functions with each 5 in
     \label{tab:constants}
 \end{table}{}
 
+As for the implementation of the derivative, we did not scale the calculated velocity as to compensate for possible extreme values for the derivative. Instead we clamped the position of each individual within the searchspace and the overshoot of the derivative would very slowly be negated by the inertia term in line \ref{eq:1} of the pseudocode. Since this is not an optimal stagegy\\
+We have tested the algorithm for both $d = (x_m^{max}-x_m^{min})/1000$ and $d = (x_m^{max}-x_m^{min})/1000000$.\\
+
 To see how well the algorithm performed, we compare it to BIPOP-CMA-ES\cite{COCOperformace} and create an Emperical Cumulative Distribution Function(ECDF)-plot for both these algorithms across all functions and dimensions using the IOHanalyzer.
+
 %Explain what experiments you perform. Mention IOHprofiler (experimenter and analyzer)~\cite{IOHprofiler}, COCO/BBOB~\cite{COCO} and any other tools you used, and reference them. 
 %Experiments should be performed on the BBOB-suite, functions 1-24, instances 1-5, at least for dimensions 5 and 20, at least 3 runs per instance.
-
-initial velocity is neglected
-
-in de paper:
-alpha is 0.1
-beta is 4
-eta = 0.9
 
 %Provide a table with the parameter values you used during the experiment, as well as the ones set in the original paper (if they are not the same, clearly state why this is the case). 
 
@@ -247,6 +252,27 @@ In a final experiment they performed, they put SSO to the test on the real-world
 %Write a very short summary of the experiments performed in the original paper. Include which functions were used and which algorithms it was compared to (and briefly mention where it was performing well).
 
 \section{Results}
+After generating the data with the IOHexperimenter it was analysed by the IOHanalyzer.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.4]{LOOKATTHISGRAPH.png}
+    \caption{ECDF-plot for 5 dimensions}
+    \label{fig:ECDF}
+\end{figure}{}
+
+In figure \ref{fig:ECDF} we see the performance of the SSO in blue and the BIPOP algorithm in yellow. The x-axis shows the amount of evaluations and the y value shows what portion of the runs has reached the optimum in this amount of evaluations. \\
+
+- snellere omhoog is beter
+- zie hoe goed hij is in 1 oogopslag (waarom deze plot voor vergelijken)(experiments)
+- deze is duidelijk slechter
+- tabel ofzo in gooien(min mean max)(mode)
+
+
+%In the execution of our experiments we found that there were some mistakes that resulted in the generation of NaN values as positions for our individuals. Because of this the data can not be uploaded in the analyzer.\\
+%The NaN values arise since the velocities, and therefore positions, and therefore function evaluation values are exploding to infinity. This might have something to do with the fact that the partial derivative is calculated in first order approximation. The derivative in a point is calculated by taking the difference of the values of two points close by the position of the shark and dividing by the distance between the two points. This can be difficult when the range or value of one variable is significantly different from another variable. We might be because these extreme values could more easily cause rounding errors.
+
+
 
 %Generate your figures using the IOHanalyzer. You are required to create at least an ECDF-plot (across all functions / dimensions) comparing your algorithm to the BIPOP-CMA-ES~\cite{COCOperformace}. For this comparison you can use the data at \url{http://coco.gforge.inria.fr/data-archive/bbob/2009/BIPOP-CMA-ES_hansen_noiseless.tgz}.
 
@@ -254,11 +280,27 @@ In a final experiment they performed, they put SSO to the test on the real-world
 
 %\textit{Tip: Modify the targets in the ECDF-plot to have 1e-8 as the minimal precision. If you do this, please submit the used targets with this assignment.}
 
+
+% \subsection{Expected results}
+% What we expected for results was an ECDF which shows for a certain amount of evaluations the best value reached and on the y-axis the amount of runs that have reached this value. The x-axis is inverted, so it begins on the left with the lowest evaluation value that every run has reached. The better the value, the fewer runs reached the value. This means that the line slowly descends to the point that no run has reached a value. The speed with which the line descends to 0 shows the quality of the algorithm in one glance. For this reason we wanted to compare it to another well known algorithm and plot them together to see how well our algorithm performs. This algorithm is called BIPOP-CMA-ES and the ECDF plot of this algorithm for a budget of 200 is shown in figure \ref{fig:BIPOP}
+% \begin{figure}[h!]
+%     \centering
+%     \includegraphics[scale=0.6]{newplot.png}
+%     \caption{ECDF plot of BIPOP-CMA-ES}
+%     \label{fig:BIPOP}
+% \end{figure}{}
+
 \section{Conclusion}
-a:
-easy to implement, but with difficulties in finding the right variables to use as there were some inconsistencies in the original paper with variable names. \\
-b:
-quite original as nothing really looked like it and there were some new ideas, but it wasn't revolutionary since the concept was quite simple and didn't really negate problems with local minimums.\\
+We found that most parts of the algorithm were quite easy to implement, but it was quite difficult to implement the partial derivative and it was easy to get confused a bit by the 3 and 4 dimensional arrays. We also found that it was difficult to find the right variables to use as there were some inconsistencies in the original paper with variable names. The algorithm itself is quite original as it is one of the only originals that we know of that does not use mutation or uses swarm mechanics. However, we do not think it is revolutionary because the concept is quite simple and it does not really negate problems with local minimums. We can not say anything about the performance of the algorithm as we do not have the results. For the same reasons we could not compare it to BIPOP.
+- hier stukje af
+- vergelijken met BIPOP
+- waarom slechter
+
+- vergelijken met original paper
+- waarom anders(discussion?)
+
+
+
 
 %Write a short conclusion summarizing the most important findings of this assignment:
 %\begin{itemize}
@@ -267,13 +309,15 @@ quite original as nothing really looked like it and there were some new ideas, b
 %    \item Does the algorithm perform similarly to the performance claims from the original paper?
 %    \item How does the performance of the algorithm compare to the BIPOP-CMA-ES?
 %\end{itemize}
-
-
+\section{Discussion}
+- willen we wel een discussion? Deze punten staan/kunnen ook in de conclusion.
+- waarom zon verschil met original paper
+- wat kan beter
 
 \bibliographystyle{splncs04}
 \bibliography{bibliography.bib}
 
-\appendix
+% \appendix
 % \section{Table of user defined constants}
 % \label{AppA}
 % \begin{table}[]
@@ -290,15 +334,15 @@ quite original as nothing really looked like it and there were some new ideas, b
 % \end{table}
 
 
-\section{Supplementary materials}
-Next to the report, you are also required to submit the following materials:
-\begin{itemize}
-    \item The C++ code of your algorithm. Use sufficient comments, modular coding style and clear variable names. This should only be one file which can directly be plugged into the IOHexperimenter (name the file \textit{GroupXX.cpp}). Make sure this file compiles and runs without errors on linux (the machines in rooms 302-306).\\
-    \textit{Tip: You can sse \url{https://git.liacs.nl} to host and share code with your teammates. You can log in using your ULCN username and password.}
-    \item The runtime data generated by your code. This should be a single zip-file, containing only the data from your algorithm (set algorithm name property to \textit{GroupXX-Animal-Name}).
-    \item Per team member: In an email (to \href{mailto:d.l.vermetten@liacs.leidenuniv.nl}{\email{d.l.vermetten@liacs.leidenuniv.nl}}, subject line should include "[NaCo Assignment Review]" + your group number): a grade for your teammates based on their contribution, with some motivation. 
-    \item This report in pdf format + the files used to generate it (tex, bib, figures). 
-\end{itemize}
+% \section{Supplementary materials}
+% Next to the report, you are also required to submit the following materials:
+% \begin{itemize}
+%     \item The C++ code of your algorithm. Use sufficient comments, modular coding style and clear variable names. This should only be one file which can directly be plugged into the IOHexperimenter (name the file \textit{GroupXX.cpp}). Make sure this file compiles and runs without errors on linux (the machines in rooms 302-306).\\
+%     \textit{Tip: You can sse \url{https://git.liacs.nl} to host and share code with your teammates. You can log in using your ULCN username and password.}
+%     \item The runtime data generated by your code. This should be a single zip-file, containing only the data from your algorithm (set algorithm name property to \textit{GroupXX-Animal-Name}).
+%     \item Per team member: In an email (to \href{mailto:d.l.vermetten@liacs.leidenuniv.nl}{\email{d.l.vermetten@liacs.leidenuniv.nl}}, subject line should include "[NaCo Assignment Review]" + your group number): a grade for your teammates based on their contribution, with some motivation. 
+%     \item This report in pdf format + the files used to generate it (tex, bib, figures). 
+% \end{itemize}
 
 
 \end{document}
