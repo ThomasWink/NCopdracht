@@ -59,7 +59,7 @@ double diff_objective(std::vector<double>& shark, int m, std::shared_ptr<IOHprof
 	double xLow, xHigh, yLow, yHigh;
 	double range = problem->IOHprofiler_get_upperbound()[m] - problem->IOHprofiler_get_lowerbound()[m];
 	std::vector<double> sharkCopy (shark);
-	delta = range / 1000000;
+	delta = range / 1000;
 	xLow = shark[m] - delta;
 	xHigh = shark[m] + delta;
 	//sharkCopy = shark;
@@ -74,19 +74,19 @@ double diff_objective(std::vector<double>& shark, int m, std::shared_ptr<IOHprof
 	//if (isnan((yHigh-yLow)/delta)){
 
 
-		std::cout << "=========================" << std::endl;
-		std::cout << (yHigh-yLow)/delta << std::endl;
-		std::cout << yHigh << std::endl;
-		std::cout << yLow << std::endl;
-		std::cout << delta << std::endl;
-		std::cout << xHigh << std::endl;
-		std::cout << xLow << std::endl;
-		std::cout << shark[m] << std::endl;
+		//std::cout << "=========================" << std::endl;
+		//std::cout << (yHigh-yLow)/delta << std::endl;
+		//std::cout << yHigh << std::endl;
+		//std::cout << yLow << std::endl;
+		//std::cout << delta << std::endl;
+		//std::cout << xHigh << std::endl;
+		//std::cout << xLow << std::endl;
+		//std::cout << shark[m] << std::endl;
 
 	//}
 
 	if (isnan((yHigh-yLow)/delta)) exit(0);
-
+	std::cout << (yHigh-yLow)/delta << std::endl;
 	return (yHigh-yLow)/delta;
 }
 
@@ -158,7 +158,7 @@ void shark_smell_search(std::shared_ptr<IOHprofiler_problem<double>> problem, st
 		for (int m = 0; m < M; ++m) {
 			//std::cout << lowerBounds[m] << std::endl;
 			positions[1][n][m] = generate_random(lowerBounds[m], upperBounds[m]);
-			velocities[1][n][m] = 0;
+			velocities[0][n][m] = (upperBounds[m] - lowerBounds[m])/100;
 		}
 	}
 	/*Determine if algorithm is maximization or minimization*/
@@ -186,18 +186,32 @@ void shark_smell_search(std::shared_ptr<IOHprofiler_problem<double>> problem, st
 					a = -diff_objective(positions[k][n], m, problem, logger);
 				}
 				//if (isnan(a)){
-					std::cout << a << std::endl;
-					std::cout << "k-1: " <<positions[k-1][n][m] << std::endl;
-					std::cout << "k-: " << positions[k][n][m] << std::endl;
-					std::cout << "k: " << k << std::endl;
+					//std::cout << a << std::endl;
+					//std::cout << "k-1: " <<positions[k-1][n][m] << std::endl;
+					//std::cout << "k-: " << positions[k][n][m] << std::endl;
+					//std::cout << "k: " << k << std::endl;
 				//}
 
 				velocities[k][n][m] = eta * r1 * a;
 				velocities[k][n][m] += alpha * r2 * velocities[k-1][n][m];
 
+				//TODO delete prints when finished
+				/*if (n == 0 && m == 0 && ){
+					if(problem->IOHprofiler_hit_optimal())
+						std::cout << "goed bezig" << std::endl;
+					std::cout << "mindbl: " << -DBL_MAX << std::endl;
+					std::cout << "afgeleide: " << a << std::endl;
+					std::cout << "V[k-1]: " << velocities[k-1][n][m] << std::endl;
+					std::cout << "V[k-0]: " << velocities[k][n][m] << std::endl;
+					std::cout << "X[k-1]: " << positions[k-1][n][m] << std::endl;
+					std::cout << "X[k-0]: " << positions[k][n][m] << std::endl;
+					std::cout << "k: " << k << std::endl;
+					std::cout << "n: " << n << std::endl;
+					std::cout << "m: " << m << std::endl;
+				}*/
 				//function 2
 				if (abs(velocities[k][n][m]) > abs(beta * velocities[k-1][n][m])) {
-					velocities[k][n][m] = beta * velocities[k-1][n][m];
+					velocities[k][n][m] = beta * velocities[k-1][n][m] * velocities[k][n][m]/abs(velocities[k][n][m]);
 				}
 			}
 		}
