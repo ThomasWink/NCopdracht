@@ -19,7 +19,7 @@ typedef std::vector<vec3> vec4;
 */
 double clamp(const double n, const double lower, const double upper) {
   return std::max(lower, std::min(n, upper));
-}
+} //clamp
 
 /*
 @summary generates a random number.
@@ -33,14 +33,13 @@ double generate_random(double rangeStart, double rangeEnd) {
 	//Generates a uniform distribution of real values
 	std::uniform_real_distribution<double>  distr(rangeStart, rangeEnd);
 	return distr(generator);
-}
+} //generate_random
 
 /*
-@summary Adds the values of two arrays into a third.
-@param array1: The first array to be added.
-@param array2: The second array to be added.
-@param result: The result array, automatic call by reference.
-@param size: The size of arrays array1, array2 and result.
+@summary Adds the values of two vectors into a third.
+@param a: The first vector to be added.
+@param b: The second vector to be added.
+@return the resulting vector result.
 */
 std::vector<double> add_vector(std::vector<double> a, std::vector<double> b) {
 	std::vector<double> result;
@@ -48,56 +47,40 @@ std::vector<double> add_vector(std::vector<double> a, std::vector<double> b) {
 		result.push_back(a[i] + b[i]);
 	}
 	return result;
-}
+} //add_vector
 
 /*
 @summary Performes a partial derivative of the objective function to x
          in the m-th dimension.
 @param shark: The positions of the individuals.
 @param m: The results of the optimization will be logged here.
-@param M: The dimension to which the objective function should be derived.
 @param problem: The problem to be optimized.
 @param logger: The results of the optimization will be logged here.
 @return The partial derivative that is computed here.
 */
-double diff_objective(std::vector<double>& shark, int m, std::shared_ptr<IOHprofiler_problem<double>> problem, std::shared_ptr<IOHprofiler_csv_logger> logger) {
-	double delta;
-	double xLow, xHigh, yLow, yHigh;
+double diff_objective(std::vector<double>& shark, int m, 
+                      std::shared_ptr<IOHprofiler_problem<double>> problem, 
+                      std::shared_ptr<IOHprofiler_csv_logger> logger) {
+	double delta; //Range over which to do the approximate differentiation
+	double xLow, xHigh, yLow, yHigh; //x and y values of the diff. start and end
 	double upperbound = problem->IOHprofiler_get_upperbound()[m];
 	double lowerbound = problem->IOHprofiler_get_lowerbound()[m];
-	double range = upperbound - lowerbound;
-	std::vector<double> sharkCopy (shark);
-	delta = range / 1000000;
+	double range = upperbound - lowerbound; //Solution space range
+	std::vector<double> sharkCopy (shark); //Copy of the input vector
+	delta = range / 1000000; //Make the delta a size relative to the range
 	xLow = clamp(shark[m]-(0.5*delta), lowerbound, upperbound);
 	xHigh = clamp(shark[m]+(0.5*delta), lowerbound, upperbound);
-	delta = xHigh - xLow;
-	//sharkCopy = shark;
+	delta = xHigh - xLow; //Correct the delta if needed
+
 	sharkCopy[m] = xLow;
-	yLow = problem->evaluate(sharkCopy);
+	yLow = problem->evaluate(sharkCopy); //Get value at differentiation start
 	logger->write_line(problem->loggerCOCOInfo());
 	sharkCopy[m] = xHigh;
-	yHigh = problem->evaluate(sharkCopy);
+	yHigh = problem->evaluate(sharkCopy); //Get value at differentiation end
 	logger->write_line(problem->loggerCOCOInfo());
 
-
-	//if (isnan((yHigh-yLow)/delta)){
-
-
-		//std::cout << "=========================" << std::endl;
-		//std::cout << (yHigh-yLow)/delta << std::endl;
-		//std::cout << yHigh << std::endl;
-		//std::cout << yLow << std::endl;
-		//std::cout << delta << std::endl;
-		//std::cout << xHigh << std::endl;
-		//std::cout << xLow << std::endl;
-		//std::cout << shark[m] << std::endl;
-
-	//}
-
-	if (isnan((yHigh-yLow)/delta)) exit(0);
-	//std::cout << (yHigh-yLow)/delta << std::endl;
-	return (yHigh-yLow)/delta;
-}
+	return (yHigh-yLow)/delta; //Calculate approximate deriative
+} //diff_objective
 
 
 /*
@@ -105,8 +88,8 @@ double diff_objective(std::vector<double>& shark, int m, std::shared_ptr<IOHprof
 @param problem: The problem to be optimized.
 @param logger: The results of the optimization will be logged here.
 */
-void shark_smell_search(std::shared_ptr<IOHprofiler_problem<double>> problem, std::shared_ptr<IOHprofiler_csv_logger> logger) {
-	std::vector<double> x(problem->IOHprofiler_get_number_of_variables());
+void shark_smell_search(std::shared_ptr<IOHprofiler_problem<double>> problem, 
+                        std::shared_ptr<IOHprofiler_csv_logger> logger) {
 
 	/*Assign constant parameters*/
 	const int N = 50; //Population size
@@ -123,8 +106,8 @@ void shark_smell_search(std::shared_ptr<IOHprofiler_problem<double>> problem, st
 	double R3; //Used as if it is a vector, random value between -1 and 1
 	double temp1; //Arbitrary random variable
 	double temp2; //Arbitrary random variable
-	bool maximization;
-	double a;
+	bool maximization; //indicates whether minimization or maximatization problem
+	double a; //stores the diff_objective return value
 
 	/*Get the lower and upper bound of each dimension's search domain*/
 	//std::vector<double> lowerBounds = problem->IOHprofiler_get_lowerbound();
@@ -165,23 +148,22 @@ void shark_smell_search(std::shared_ptr<IOHprofiler_problem<double>> problem, st
 	/*Generate random starting positions for individuals*/
 	for (int n = 0; n < N; ++n) {
 		for (int m = 0; m < M; ++m) {
-			//std::cout << lowerBounds[m] << std::endl;
 			positions[1][n][m] = generate_random(lowerBounds[m], upperBounds[m]);
-			velocities[0][n][m] = (upperBounds[m] - lowerBounds[m])/100;
+			velocities[0][n][m] = (upperBounds[m] - lowerBounds[m])/100;//small non-zero
 		}
 	}
+	
 	/*Determine if algorithm is maximization or minimization*/
 	if (problem->IOHprofiler_get_optimization_type() == 1) {
 		maximization = 1;
-	} else {
+	} 
+	else {
 		maximization = 0;
 	}
 
 	/*algorithm main loop*/
 	//iteration over all stages
 	for (int k = 1; k <= kMax; ++k) {
-		//std::cout << "=======================================" << std::endl
-		//					<< "=======================================" << std::endl;
 		//Calculation of movement per individual, dimension
 		for (int n = 0; n < N; ++n) {
 			for (int m = 0; m < M; ++m) {
@@ -191,105 +173,103 @@ void shark_smell_search(std::shared_ptr<IOHprofiler_problem<double>> problem, st
 				//function 1
 				if (maximization) {
 					a = diff_objective(positions[k][n], m, problem, logger);
-				} else {
+				} 
+				else {
 					a = -diff_objective(positions[k][n], m, problem, logger);
 				}
-				//if (isnan(a)){
-					//std::cout << a << std::endl;
-					//std::cout << "k-1: " <<positions[k-1][n][m] << std::endl;
-					//std::cout << "k-: " << positions[k][n][m] << std::endl;
-					//std::cout << "k: " << k << std::endl;
-				//}
 
 				velocities[k][n][m] = eta * r1 * a;
 				velocities[k][n][m] += alpha * r2 * velocities[k-1][n][m];
 
-				//TODO delete prints when finished
-				/*if (n == 0 && m == 0 && ){
-					if(problem->IOHprofiler_hit_optimal())
-						std::cout << "goed bezig" << std::endl;
-					std::cout << "mindbl: " << -DBL_MAX << std::endl;
-					std::cout << "afgeleide: " << a << std::endl;
-					std::cout << "V[k-1]: " << velocities[k-1][n][m] << std::endl;
-					std::cout << "V[k-0]: " << velocities[k][n][m] << std::endl;
-					std::cout << "X[k-1]: " << positions[k-1][n][m] << std::endl;
-					std::cout << "X[k-0]: " << positions[k][n][m] << std::endl;
-					std::cout << "k: " << k << std::endl;
-					std::cout << "n: " << n << std::endl;
-					std::cout << "m: " << m << std::endl;
-				}*/
 				//function 2
 				if (abs(velocities[k][n][m]) > abs(beta * velocities[k-1][n][m])) {
-					velocities[k][n][m] = beta * velocities[k-1][n][m] * velocities[k][n][m]/abs(velocities[k][n][m]);
+					velocities[k][n][m] = beta * velocities[k-1][n][m] * 
+					                      velocities[k][n][m] / abs(velocities[k][n][m]);
 				}
 			}
 		}
+		
 		//Provisional assignment of new position per individual
 		for (int n = 0; n < N; ++n) {
 			//function 3
 			for (int m = 0; m < M; ++m)
-				positionsTemp[k+1][n][m] = clamp(add_vector(positions[k][n], velocities[k][n])[m], lowerBounds[m], upperBounds[m]);
+				positionsTemp[k+1][n][m] = clamp(add_vector(positions[k][n], velocities[k][n])[m], 
+				                                 lowerBounds[m], upperBounds[m]);
 		}
+		
 		//Random local search from provisional position
-		for (int n = 0; n < N; ++n) {
-			//per individual, dimension
-			for (int o = 0; o < O; ++o) {
-				for (int m = 0; m < M; ++m) {
+		for (int n = 0; n < N; ++n) { //per individual
+			for (int o = 0; o < O; ++o) { //per rotational search
+				for (int m = 0; m < M; ++m) { //per dimension
 					R3 = generate_random(-1, 1);
 					//Derivation from original algorithm / function 4
-					rotational[k+1][n][o][m] = clamp(positionsTemp[k+1][n][m] + R3 * velocities[k][n][m], lowerBounds[m], upperBounds[m]);
+					rotational[k+1][n][o][m] = clamp(positionsTemp[k+1][n][m] + R3 * velocities[k][n][m], 
+					                                 lowerBounds[m], upperBounds[m]);
 				}
 			}
 		}
-		//Definitive assignment of new position per individual (funcition 5)
+		
+		//Definitive assignment of new position per individual (function 5)
 		for (int n = 0; n < N; ++n) {
 			//iteration over the random local search points
 			temp1 = problem->evaluate(rotational[k+1][n][0]);
 			logger->write_line(problem->loggerCOCOInfo());
 			positions[k+1][n] = rotational[k+1][n][0];
-			for (int o = 0; o < O; ++o) {
+			
+			//determine which rotational search point is the best
+			for (int o = 0; o < O; ++o) { //per rotational search
 				temp2 = problem->evaluate(rotational[k+1][n][o]);
 				logger->write_line(problem->loggerCOCOInfo());
+				
 				if (maximization) {
 					if (temp1 < temp2) {
 						temp1 = temp2;
 						positions[k+1][n] = rotational[k+1][n][o];
 					}
-				} else {
+				} 
+				else {
 					if (temp1 > temp2) {
 						temp1 = temp2;
 						positions[k+1][n] = rotational[k+1][n][o];
 					}
 				}
 			}
-			temp1 = problem->evaluate(positionsTemp[k+1][n]);
+			
+			temp1 = problem->evaluate(positionsTemp[k+1][n]); //origin
 			logger->write_line(problem->loggerCOCOInfo());
-			temp2 = problem->evaluate(positions[k+1][n]);
+			temp2 = problem->evaluate(positions[k+1][n]); //rotational
 			logger->write_line(problem->loggerCOCOInfo());
+			
+			//compare which is better; origin or rotational
 			if (maximization) {
 				if (temp1 > temp2) {
 					positions[k+1][n] = positionsTemp[k+1][n];
 				}
-			} else {
+			} 
+			else {
 				if (temp1 < temp2) {
 					positions[k+1][n] = positionsTemp[k+1][n];
 				}
 			}
+			
 			temp1 = problem->evaluate(positions[k][n]);
 			logger->write_line(problem->loggerCOCOInfo());
 			temp2 = problem->evaluate(positions[k+1][n]);
 			logger->write_line(problem->loggerCOCOInfo());
+			
+			//compare position in phase k+1 with k
 			if (maximization) {
 				if (temp1 > temp2) {
 					positions[k+1][n] = positions[k][n];
 				}
-			} else {
+			} 
+			else {
 				if (temp1 < temp2) {
 					positions[k+1][n] = positions[k][n];
 				}
 			}
 		}
 	}
-} //main function
+} //shark_smell_search
 
-#endif //GROUp08_CPP
+#endif //GROUP08_CPP
