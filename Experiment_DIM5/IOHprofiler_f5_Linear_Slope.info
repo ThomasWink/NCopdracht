@@ -1,0 +1,3 @@
+suite = BBOB, funcId = 5, DIM = 5, algId = shark_smell_search, algInfo = shark_smell_seach_optimization
+%
+data_f5_Linear_Slope/IOHprofiler_f5_DIM5.dat, 1:4829|-9.21, 1:5329|-9.21, 1:7400|-9.21, 2:5903|655.99, 2:3826|655.99, 2:7652|655.99, 3:10117|66.71, 3:6067|66.71, 3:6305|66.71, 4:5988|941.67, 4:4629|941.67, 4:8648|941.67, 5:7825|-37.45, 5:6101|-37.45, 5:7451|-37.45
